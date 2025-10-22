@@ -13,6 +13,9 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private float startingNexusHealth = 100f;
     [SerializeField] public int startingMoney = 500;
 
+    [SerializeField] private DamageText damageTextPrefab;
+    [SerializeField] private float textSpawnOffsetY = 1.5f;
+
     private float nexusHealth;
     private int currentMoney;
     private readonly List<Enemy> enemies = new List<Enemy>();
@@ -21,6 +24,7 @@ public class GameManager : Singleton<GameManager>
     public event Action<float> OnNexusDamaged;
     public event Action<float> OnNexusHealthChanged;
     private Coroutine spawnCoroutine;
+    public bool IsPaused { get; private set; }
 
 
     public override void Awake()
@@ -49,7 +53,32 @@ public class GameManager : Singleton<GameManager>
 
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (IsPaused)
+                ResumeGame();
+            else
+                PauseGame();
+        }
+    }
 
+    public void PauseGame()
+    {
+        if (IsPaused) return;
+        Time.timeScale = 0f;
+        IsPaused = true;
+        UIManager.Instance.ShowPauseMenu(true);
+    }
+
+    public void ResumeGame()
+    {
+        if (!IsPaused) return;
+        Time.timeScale = 1f;
+        IsPaused = false;
+        UIManager.Instance.ShowPauseMenu(false);
+    }
     public void RegisterEnemy(Enemy e)
     {
         if (e == null) return;
@@ -219,5 +248,11 @@ public class GameManager : Singleton<GameManager>
         UIManager.Instance?.UpdateCurrencyUI(currentMoney);
         return true;
     }
-
+    public void ShowDamageText(Vector3 worldPos, float amount, Color color)
+    {
+        if (damageTextPrefab == null) return;
+        Vector3 spawnPos = worldPos + Vector3.up * textSpawnOffsetY;
+        DamageText dt = Instantiate(damageTextPrefab, spawnPos, Quaternion.identity);
+        dt.Initialize(amount, color);
+    }
 }

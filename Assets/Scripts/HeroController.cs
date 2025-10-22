@@ -21,15 +21,21 @@ public class HeroController : MonoBehaviour
 
     private void Update()
     {
+        if (GameManager.Instance != null && GameManager.Instance.IsPaused)
+            return;
+
         HandleInput();
     }
 
     private void HandleInput()
     {
+        var inputHandler = InputHandler.Instance; 
         Vector3 input = new Vector3(
-            Keyboard.current.aKey.isPressed ? -1 : Keyboard.current.dKey.isPressed ? 1 : 0,
+            (Input.GetKey(inputHandler.GetKey("MoveLeft")) ? -1 : 0) +
+            (Input.GetKey(inputHandler.GetKey("MoveRight")) ? 1 : 0),
             0,
-            Keyboard.current.sKey.isPressed ? -1 : Keyboard.current.wKey.isPressed ? 1 : 0
+            (Input.GetKey(inputHandler.GetKey("MoveDown")) ? -1 : 0) +
+            (Input.GetKey(inputHandler.GetKey("MoveUp")) ? 1 : 0)
         );
 
         if (input.sqrMagnitude > 0)
@@ -38,7 +44,7 @@ public class HeroController : MonoBehaviour
             moveCmd.Execute(this);
         }
 
-        if (Mouse.current.rightButton.wasPressedThisFrame)
+        if (Input.GetKeyDown(inputHandler.GetKey("Attack")))
         {
             Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
             if (Physics.Raycast(ray, out RaycastHit hit))
@@ -51,14 +57,12 @@ public class HeroController : MonoBehaviour
             }
         }
 
-        if (Keyboard.current.digit1Key.wasPressedThisFrame)
-        {
-            new AbilityCommand(0).Execute(this);
-        }
-        if (Keyboard.current.digit2Key.wasPressedThisFrame) new AbilityCommand(1).Execute(this);
-        if (Keyboard.current.digit3Key.wasPressedThisFrame) new AbilityCommand(2).Execute(this);
-        if (Keyboard.current.digit4Key.wasPressedThisFrame) new AbilityCommand(3).Execute(this);
+        if (Input.GetKeyDown(inputHandler.GetKey("Ability1"))) new AbilityCommand(0).Execute(this);
+        if (Input.GetKeyDown(inputHandler.GetKey("Ability2"))) new AbilityCommand(1).Execute(this);
+        if (Input.GetKeyDown(inputHandler.GetKey("Ability3"))) new AbilityCommand(2).Execute(this);
+        if (Input.GetKeyDown(inputHandler.GetKey("Ability4"))) new AbilityCommand(3).Execute(this);
     }
+
 
     public void Move(Vector3 direction)
     {

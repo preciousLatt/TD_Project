@@ -54,6 +54,21 @@ public class Enemy : MonoBehaviour
         if (IsDead) return;
         health -= amount;
         if (health <= 0f) Die();
+
+/*
+        if (amount <= 0f) return;
+
+        CurrentHealth -= amount;
+        CurrentHealth = Mathf.Max(0f, CurrentHealth);
+
+        Debug.Log($"{name} took {amount} damage. HP = {CurrentHealth}/{maxHealth}");
+        if (GameManager.Instance != null)
+            GameManager.Instance.ShowDamageText(transform.position, amount, Color.red);
+        if (CurrentHealth <= 0f)
+        {
+            Die();
+        }
+       */
     }
 
     private void Die()

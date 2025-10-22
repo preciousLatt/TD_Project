@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Tower : MonoBehaviour
 {
-    [Header("Stats")]
+    [Header("")]
     [SerializeField] public float attackRange = 5f;
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private Projectile projectilePrefab;
-    [SerializeField] private string displayName = "Basic Tower";
-    [SerializeField, TextArea] private string description = "Fires at the nearest enemy.";
-    public string DisplayName => displayName;
-    public string Description => description;
-    [Header("Upgrades")]
     public List<UpgradePath> upgradePaths = new List<UpgradePath>();
 
     private int[] currentUpgradeIndexes; 
@@ -36,11 +32,13 @@ public class Tower : MonoBehaviour
             var target = GameManager.Instance?.GetClosestEnemy(transform.position);
             if (target != null && Vector3.Distance(transform.position, target.transform.position) <= attackRange)
             {
-                Projectile.Spawn(projectilePrefab, shootPoint.position, target);
+                Projectile.Spawn(projectilePrefab, shootPoint.position, target, damage);
+
                 fireTimer = 1f / fireRate;
             }
         }
     }
+
 
     public UpgradeStep GetNextUpgrade(int pathIndex)
     {
@@ -62,7 +60,9 @@ public class Tower : MonoBehaviour
         }
         float newRange = attackRange + next.rangeBonus;
         float newFireRate = fireRate + next.fireRateBonus;
+        float newDamage = damage + next.damageBonus;
         int[] newIndexes = (int[])currentUpgradeIndexes.Clone();
+
         newIndexes[pathIndex]++;
 
         if (next.upgradedTowerPrefab != null)
@@ -74,6 +74,7 @@ public class Tower : MonoBehaviour
                 newTower.attackRange = newRange;
                 newTower.SetFireRate(newFireRate);
                 newTower.SetUpgradeIndexes(newIndexes);
+                newTower.damage = newDamage;
             }
 
             UIManager.Instance.SetActiveTower(newTower);
@@ -99,4 +100,5 @@ public class Tower : MonoBehaviour
     {
         fireRate = newRate;
     }
+ 
 }

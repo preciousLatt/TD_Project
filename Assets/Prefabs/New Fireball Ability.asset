@@ -15,6 +15,5 @@ MonoBehaviour:
   abilityName: Fireball
   manaCost: 20
   cooldown: 5
-  fireballPrefab: {fileID: 0}
-  range: 10
+  projectilePrefab: {fileID: 3802205961566017439, guid: e4560fe1f89ed914db166702fc0f48a2, type: 3}
   damage: 50

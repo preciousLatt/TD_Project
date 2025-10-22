@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour
     private float lifeTimer = 0f;
 
 
-    public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 2f)
+    public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 0f)
     {
         if (prefab == null)
         {
@@ -103,7 +103,7 @@ public class Projectile : MonoBehaviour
         {
             if (targetEnemy == null || targetEnemy.IsDead)
             {
-                Destroy(gameObject);
+                OnReachedTarget();
                 return;
             }
             currentTargetPos = targetEnemy.transform.position;
@@ -148,4 +148,16 @@ public class Projectile : MonoBehaviour
             transform.rotation = Quaternion.RotateTowards(transform.rotation, desired, rotationSpeed * Time.deltaTime);
         }
     }
+
+    protected virtual void OnReachedTarget()
+    {
+        if (useEnemyTarget && targetEnemy != null)
+        {
+            if (GameManager.Instance != null)
+                GameManager.Instance.DamageEnemy(targetEnemy, damage);
+        }
+
+        Destroy(gameObject);
+    }
+
 }
