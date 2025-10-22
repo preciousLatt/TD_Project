@@ -17,7 +17,7 @@ public class Projectile : MonoBehaviour
     private float lifeTimer = 0f;
 
 
-    public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 2f)
+    public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 0f)
     {
         if (prefab == null)
         {

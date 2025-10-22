@@ -33,7 +33,7 @@ public class Tower : MonoBehaviour
             var target = GameManager.Instance?.GetClosestEnemy(transform.position);
             if (target != null && Vector3.Distance(transform.position, target.transform.position) <= attackRange)
             {
-                Projectile.Spawn(projectilePrefab, shootPoint.position, target);
+                Projectile.Spawn(projectilePrefab, shootPoint.position, target, damage);
 
                 fireTimer = 1f / fireRate;
             }
@@ -61,7 +61,9 @@ public class Tower : MonoBehaviour
         }
         float newRange = attackRange + next.rangeBonus;
         float newFireRate = fireRate + next.fireRateBonus;
+        float newDamage = damage + next.damageBonus;
         int[] newIndexes = (int[])currentUpgradeIndexes.Clone();
+
         newIndexes[pathIndex]++;
 
         if (next.upgradedTowerPrefab != null)
@@ -73,6 +75,7 @@ public class Tower : MonoBehaviour
                 newTower.attackRange = newRange;
                 newTower.SetFireRate(newFireRate);
                 newTower.SetUpgradeIndexes(newIndexes);
+                newTower.damage = newDamage;
             }
 
             UIManager.Instance.SetActiveTower(newTower);

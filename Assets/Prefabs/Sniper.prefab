@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 54fd00b2a31912e46974b2622f5ff59d, type: 2}
+  - {fileID: 2100000, guid: 3a54bd903b8ccea4b9ac9dcfbc1e9c80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -137,8 +137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3750620653431954595}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.23, y: 1.855, z: 0.004}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.62, y: 1.74, z: 0.039}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168,8 +168,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4240993552736707030}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.474, y: 0, z: 0.1019533}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -244,7 +244,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 54fd00b2a31912e46974b2622f5ff59d, type: 2}
+  - {fileID: 2100000, guid: 3a54bd903b8ccea4b9ac9dcfbc1e9c80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -297,13 +297,12 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4203174354117474980}
-  - component: {fileID: 9208823675537660666}
   - component: {fileID: 7944973651788677595}
   - component: {fileID: 4577081193566396626}
   - component: {fileID: 4539866385967464439}
-  - component: {fileID: 3653843633108639726}
+  - component: {fileID: 1047398698852976015}
   m_Layer: 6
-  m_Name: Tower 1
+  m_Name: Sniper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -318,7 +317,7 @@ Transform:
   m_GameObject: {fileID: 6088082822551878824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.35969085, y: 0, z: 0.57077885}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -326,23 +325,6 @@ Transform:
   - {fileID: 4245452789475927615}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &9208823675537660666
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6088082822551878824}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 664b39988e3c0e2418309657851430e2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Tower
-  attackRange: 15
-  fireRate: 1
-  damage: 10
-  projectilePrefab: {fileID: -3502866537789855490, guid: c5a1aaa7ccbf99445924db4115fd60df, type: 3}
-  upgradePaths: []
 --- !u!65 &7944973651788677595
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -388,9 +370,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 774847b2f5a8a3641a59ca117308cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DrawRange
-  rangeColor: {r: 0, g: 0, b: 0, a: 0.1764706}
-  groundOnlyMaterial: {fileID: 0}
---- !u!114 &3653843633108639726
+  rangeColor: {r: 0, g: 0, b: 0, a: 0.2509804}
+  groundOnlyMaterial: {fileID: 2100000, guid: e751fafc71b11f74d9b1685be635a9f8, type: 2}
+--- !u!114 &1047398698852976015
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -405,7 +387,7 @@ MonoBehaviour:
   attackRange: 10
   fireRate: 1
   damage: 10
-  projectilePrefab: {fileID: 0}
+  projectilePrefab: {fileID: -3502866537789855490, guid: c5a1aaa7ccbf99445924db4115fd60df, type: 3}
   upgradePaths: []
 --- !u!1 &6517125826316685810
 GameObject:
@@ -474,7 +456,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 54fd00b2a31912e46974b2622f5ff59d, type: 2}
+  - {fileID: 2100000, guid: 3a54bd903b8ccea4b9ac9dcfbc1e9c80, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

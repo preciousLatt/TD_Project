@@ -46,7 +46,7 @@ public class DrawRange : MonoBehaviour
     public void SetRangeRadius(float radius)
     {
         if (visualInstance != null)
-            visualInstance.transform.localScale = new Vector3(radius * 2f, 1f, radius * 2f);
+            visualInstance.transform.localScale = new Vector3(radius, 1f, radius);
     }
 
     public void ShowRange() => visualInstance?.SetActive(true);

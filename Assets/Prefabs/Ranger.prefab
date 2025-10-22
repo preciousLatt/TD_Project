@@ -67,7 +67,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0377e79e216a12f40adcc4ad378c4c1c, type: 2}
+  - {fileID: 2100000, guid: 400d9f3156c37124aa55d8833b103464, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -244,7 +244,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0377e79e216a12f40adcc4ad378c4c1c, type: 2}
+  - {fileID: 2100000, guid: 400d9f3156c37124aa55d8833b103464, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -302,7 +302,7 @@ GameObject:
   - component: {fileID: 4539866385967464439}
   - component: {fileID: 1047398698852976015}
   m_Layer: 6
-  m_Name: Tower
+  m_Name: Ranger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -384,45 +384,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 664b39988e3c0e2418309657851430e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Tower
-  attackRange: 20
+  attackRange: 10
   fireRate: 1
   damage: 10
   projectilePrefab: {fileID: -3502866537789855490, guid: c5a1aaa7ccbf99445924db4115fd60df, type: 3}
-  upgradePaths:
-  - pathName: Ranger
-    pathIcon: {fileID: 0}
-    steps:
-    - displayName: 1
-      icon: {fileID: 0}
-      cost: 100
-      rangeBonus: 0
-      fireRateBonus: 5
-      damageBonus: 5
-      upgradedTowerPrefab: {fileID: 6088082822551878824, guid: 3e263ac5830cb724aaab0033957c41c9, type: 3}
-    - displayName: 2
-      icon: {fileID: 0}
-      cost: 0
-      rangeBonus: 0
-      fireRateBonus: 0
-      damageBonus: 0
-      upgradedTowerPrefab: {fileID: 6088082822551878824, guid: 3e263ac5830cb724aaab0033957c41c9, type: 3}
-  - pathName: Sniper
-    pathIcon: {fileID: 0}
-    steps:
-    - displayName: 1
-      icon: {fileID: 0}
-      cost: 100
-      rangeBonus: 50
-      fireRateBonus: 0
-      damageBonus: 15
-      upgradedTowerPrefab: {fileID: 6088082822551878824, guid: 6b1dbfcdcda528c48a5df6d096772aeb, type: 3}
-    - displayName: 2
-      icon: {fileID: 0}
-      cost: 0
-      rangeBonus: 50
-      fireRateBonus: 0
-      damageBonus: 20
-      upgradedTowerPrefab: {fileID: 6088082822551878824, guid: 6b1dbfcdcda528c48a5df6d096772aeb, type: 3}
+  upgradePaths: []
 --- !u!1 &6517125826316685810
 GameObject:
   m_ObjectHideFlags: 0
@@ -490,7 +456,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 0377e79e216a12f40adcc4ad378c4c1c, type: 2}
+  - {fileID: 2100000, guid: 400d9f3156c37124aa55d8833b103464, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
