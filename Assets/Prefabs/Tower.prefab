@@ -137,8 +137,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3750620653431954595}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 1.23, y: 1.855, z: 0.004}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.62, y: 1.74, z: 0.039}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -168,8 +168,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4240993552736707030}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.474, y: 0, z: 0.1019533}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -317,7 +317,7 @@ Transform:
   m_GameObject: {fileID: 6088082822551878824}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.35969085, y: 0, z: 0.57077885}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -370,7 +370,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 774847b2f5a8a3641a59ca117308cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DrawRange
-  rangeVisualPrefab: {fileID: 0}
   rangeColor: {r: 0, g: 0, b: 0, a: 0.31764707}
   groundOnlyMaterial: {fileID: 2100000, guid: e751fafc71b11f74d9b1685be635a9f8, type: 2}
 --- !u!114 &1047398698852976015
@@ -389,6 +388,7 @@ MonoBehaviour:
   fireRate: 1
   damage: 10
   projectilePrefab: {fileID: -3502866537789855490, guid: c5a1aaa7ccbf99445924db4115fd60df, type: 3}
+  towerVisual: {fileID: 4245452789475927615}
   upgradePaths:
   - pathName: Ranger
     pathIcon: {fileID: 0}

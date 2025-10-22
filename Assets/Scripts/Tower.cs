@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Tower : MonoBehaviour
 {
-    [Header("Stats")]
+    [Header("")]
     [SerializeField] public float attackRange = 5f;
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private Projectile projectilePrefab;
 
-    [Header("Upgrades")]
     public List<UpgradePath> upgradePaths = new List<UpgradePath>();
 
     private int[] currentUpgradeIndexes; 
@@ -34,10 +34,12 @@ public class Tower : MonoBehaviour
             if (target != null && Vector3.Distance(transform.position, target.transform.position) <= attackRange)
             {
                 Projectile.Spawn(projectilePrefab, shootPoint.position, target);
+
                 fireTimer = 1f / fireRate;
             }
         }
     }
+
 
     public UpgradeStep GetNextUpgrade(int pathIndex)
     {
@@ -96,4 +98,5 @@ public class Tower : MonoBehaviour
     {
         fireRate = newRate;
     }
+ 
 }
