@@ -12,13 +12,18 @@ public class UIManager : Singleton.Singleton<UIManager>
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
     [SerializeField] private HeroAbilitySlot[] abilitySlots;
+    [SerializeField] private GameObject pausePanel;
 
 
     private Tower currentTower;
     public Tower CurrentTower => currentTower;
     public HeroAbilitySlot[] AbilitySlots => abilitySlots;
+    private RebindRowUI[] rebindRows;
 
-
+    private void Awake()
+    {
+        rebindRows = FindObjectsOfType<RebindRowUI>(true); 
+    }
     public void SetupHeroUI(HeroCombat hero)
     {
         if (abilitySlots != null)
@@ -27,7 +32,11 @@ public class UIManager : Singleton.Singleton<UIManager>
                 abilitySlots[i].Bind(hero, hero.GetAbility(i));
         }
     }
-
+    public void ShowPauseMenu(bool show)
+    {
+        if (pausePanel != null)
+            pausePanel.SetActive(show);
+    }
     public void UpdateHeroBars(HeroStats stats)
     {
         if (healthBar != null)
@@ -86,5 +95,15 @@ public class UIManager : Singleton.Singleton<UIManager>
     {
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
+    }
+    public void UpdateRemapUI()
+    {
+        if (rebindRows == null || rebindRows.Length == 0)
+            rebindRows = FindObjectsOfType<RebindRowUI>(true);
+
+        foreach (var row in rebindRows)
+        {
+            row.Refresh();
+        }
     }
 }
