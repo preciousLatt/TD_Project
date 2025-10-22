@@ -301,6 +301,7 @@ GameObject:
   - component: {fileID: 4577081193566396626}
   - component: {fileID: 4539866385967464439}
   - component: {fileID: 1047398698852976015}
+  - component: {fileID: -8648310844513087152}
   m_Layer: 6
   m_Name: Tower
   m_TagString: Untagged
@@ -370,7 +371,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 774847b2f5a8a3641a59ca117308cd6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DrawRange
-  rangeVisualPrefab: {fileID: 0}
   rangeColor: {r: 0, g: 0, b: 0, a: 0.31764707}
   groundOnlyMaterial: {fileID: 2100000, guid: e751fafc71b11f74d9b1685be635a9f8, type: 2}
 --- !u!114 &1047398698852976015
@@ -407,6 +407,19 @@ MonoBehaviour:
       fireRateBonus: 0
       damageBonus: 0
       upgradedTowerPrefab: {fileID: 6088082822551878824, guid: 342c9b5e0e3f78c49a8e276908341c9e, type: 3}
+--- !u!114 &-8648310844513087152
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6088082822551878824}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 35f2408ddccf3490ea5548f4248217a3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TowerCost
+  cost: 100
 --- !u!1 &6517125826316685810
 GameObject:
   m_ObjectHideFlags: 0

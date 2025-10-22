@@ -12,6 +12,10 @@ public class UIManager : Singleton.Singleton<UIManager>
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
     [SerializeField] private HeroAbilitySlot[] abilitySlots;
+    [SerializeField] private GameObject towerDescriptionPanel;
+    //[SerializeField] private TMPro.TextMeshProUGUI towerNameText;
+    [SerializeField] private TMPro.TextMeshProUGUI towerDescText;
+
 
 
     private Tower currentTower;
@@ -43,10 +47,12 @@ public class UIManager : Singleton.Singleton<UIManager>
         if (tower == null)
         {
             HideUpgradePanel();
+            HideTowerDescription();
             return;
         }
 
         ShowUpgradePanel(tower);
+        ShowTowerDescription(tower);
     }
     public void UpdateCurrencyUI(int newAmount)
     {
@@ -86,5 +92,25 @@ public class UIManager : Singleton.Singleton<UIManager>
     {
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
+    }
+    
+    private void ShowTowerDescription(Tower tower)
+    {
+        if (!towerDescriptionPanel) return;
+        towerDescriptionPanel.SetActive(true);
+
+        // if (towerNameText) towerNameText.text = tower.DisplayName;
+        if (towerDescText)
+        {
+            towerDescText.text =
+                $"cool tower description";
+        }
+    }
+
+    private void HideTowerDescription()
+    {
+        if (towerDescriptionPanel) towerDescriptionPanel.SetActive(false);
+        //if (towerNameText) towerNameText.text = "";
+        if (towerDescText) towerDescText.text = "";
     }
 }

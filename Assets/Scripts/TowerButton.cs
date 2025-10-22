@@ -26,6 +26,10 @@ public class TowerButton : MonoBehaviour
     {
         if (button != null)
             button.onClick.RemoveListener(OnClick_StartPlacing);
+        
+        if (UIManager.Instance?.CurrentTower == this)
+            UIManager.Instance.SetActiveTower(null);
+        
     }
 
     public void OnClick_StartPlacing()

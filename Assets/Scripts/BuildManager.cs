@@ -6,7 +6,6 @@ public class BuildManager : Singleton<BuildManager>
 {
     [SerializeField] private Camera playerCamera;           
     [SerializeField] private LayerMask groundMask;         
-
     [SerializeField] private LayerMask towerMask;           
     [SerializeField] private float placementCheckPadding = 1f; 
 
@@ -126,9 +125,10 @@ public class BuildManager : Singleton<BuildManager>
         {
             return;
         }
-
-        GameObject placed = Instantiate(currentActualPrefab, worldPos, rot);
-
+        
+        int towerCost = currentActualPrefab.GetComponent<TowerCost>()?.cost ?? 100; 
+        var cmd = new BuildTowerCommand(currentActualPrefab, worldPos, rot, towerCost);
+        CommandManager.Instance.ExecuteCommand(cmd);
 
         Destroy(currentPreviewInstance);
         currentPreviewInstance = null;
@@ -137,6 +137,17 @@ public class BuildManager : Singleton<BuildManager>
         currentInvalidPreviewPrefab = null;
         currentActualPrefab = null;
         previewRenderersCache = null;
+        /*
+        GameObject placed = Instantiate(currentActualPrefab, worldPos, rot);
+        
+        Destroy(currentPreviewInstance);
+        currentPreviewInstance = null;
+
+        currentValidPreviewPrefab = null;
+        currentInvalidPreviewPrefab = null;
+        currentActualPrefab = null;
+        previewRenderersCache = null;
+        */
     }
 
     private void SwapPreviewPrefabInstance(bool wantValid)

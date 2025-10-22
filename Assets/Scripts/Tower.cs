@@ -8,7 +8,10 @@ public class Tower : MonoBehaviour
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float damage = 10f;
     [SerializeField] private Projectile projectilePrefab;
-
+    [SerializeField] private string displayName = "Basic Tower";
+    [SerializeField, TextArea] private string description = "Fires at the nearest enemy.";
+    public string DisplayName => displayName;
+    public string Description => description;
     [Header("Upgrades")]
     public List<UpgradePath> upgradePaths = new List<UpgradePath>();
 
