@@ -8,7 +8,7 @@ A Tower Defence Game with a controllable character (WASD) who can cast spells, p
 
 The scenario's purpose will is to showcase all the design patterns so far done in class. The scene so far does not follow the player's movement but is more than capable of showcasing all the design patterns we have learned in class. Enemies will make their way to the nexus and the player must right-click to attack or cast spells to destroy the enemies and place towers to defend the objective. Towers can be upgraded and killing enemies gives cash. 
 
-![alt text](Nexus1.pdf)
+![alt text](Nexus1-1.png)
 
 Click 1 to cast a fireball
 
