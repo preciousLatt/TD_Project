@@ -12,7 +12,7 @@ The scenario's purpose will is to showcase all the design patterns so far done i
 
 Click 1 to cast a fireball
 
-![alt text](Fireball1)
+![alt text](Fireball-1.png)
 
 
 ## Summarize in 100 words what strategies did you use for creating the group:
