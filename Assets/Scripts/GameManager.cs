@@ -17,7 +17,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField] private float textSpawnOffsetY = 1.5f;
 
     private float nexusHealth;
-    private int currentMoney;
+    public int currentMoney;
     private readonly List<Enemy> enemies = new List<Enemy>();
     public event Action<Enemy> OnEnemySpawned;
     public event Action<Enemy> OnEnemyDied;
@@ -45,11 +45,14 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
+        /*
         if (startSpawningOnAwake && spawnCoroutine == null)
         {
             StartSpawningEnemies(defaultEnemyPrefabForEditor, 1.5f, 10f, maxConcurrentEnemies);
         }
+        */
         UIManager.Instance?.UpdateCurrencyUI(currentMoney);
+        
 
     }
 
@@ -152,6 +155,8 @@ public class GameManager : Singleton<GameManager>
 
     public void NotifyEnemyDied(Enemy e)
     {
+        currentMoney += 100;
+        UIManager.Instance.UpdateCurrencyUI(currentMoney);
         if (e == null) return;
         UnregisterEnemy(e);
         OnEnemyDied?.Invoke(e);
@@ -159,7 +164,7 @@ public class GameManager : Singleton<GameManager>
 
 
     [SerializeField] private GameObject defaultEnemyPrefabForEditor;
-
+/*
     public void StartSpawningEnemies(GameObject enemyPrefab, float spawnInterval, float spawnRadius, int maxConcurrent = 0, Transform center = null)
     {
         if (enemyPrefab == null)
@@ -170,6 +175,7 @@ public class GameManager : Singleton<GameManager>
         if (spawnCoroutine != null) StopCoroutine(spawnCoroutine);
         spawnCoroutine = StartCoroutine(SpawnRoutine(enemyPrefab, spawnInterval, spawnRadius, maxConcurrent, center));
     }
+*/
 
     public void StopSpawningEnemies()
     {
@@ -179,7 +185,7 @@ public class GameManager : Singleton<GameManager>
             spawnCoroutine = null;
         }
     }
-
+/*
     private IEnumerator SpawnRoutine(GameObject prefab, float interval, float radius, int maxConcurrent, Transform center)
     {
         Transform spawnAt = center != null ? center : spawnCenter;
@@ -193,7 +199,8 @@ public class GameManager : Singleton<GameManager>
             yield return new WaitForSeconds(interval);
         }
     }
-
+*/
+/*
     public Enemy SpawnEnemy(GameObject enemyPrefab, Vector3 position, Quaternion rotation)
     {
         if (enemyPrefab == null)
@@ -226,6 +233,7 @@ public class GameManager : Singleton<GameManager>
 
         return point;
     }
+*/
     public int Money => currentMoney;
 
     public bool CanAfford(int cost)

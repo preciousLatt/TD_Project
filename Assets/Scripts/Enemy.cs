@@ -1,4 +1,4 @@
-using UnityEngine;
+    using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
@@ -51,6 +51,7 @@ public class Enemy : MonoBehaviour
 
     public void TakeDamage(float amount)
     {
+        GameManager.Instance.ShowDamageText(transform.position, amount, Color.red);
         if (IsDead) return;
         health -= amount;
         if (health <= 0f) Die();

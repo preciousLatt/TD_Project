@@ -31,6 +31,7 @@ public class CommandManager : MonoBehaviour
     {
         if (undoStack.Count == 0) return;
         ICommand cmd = undoStack.Pop();
+        GameManager.Instance.currentMoney += 1000;
         cmd.Undo();
         redoStack.Push(cmd);
     }

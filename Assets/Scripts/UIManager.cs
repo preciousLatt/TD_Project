@@ -52,12 +52,10 @@ public class UIManager : Singleton.Singleton<UIManager>
         if (tower == null)
         {
             HideUpgradePanel();
-            HideTowerDescription();
             return;
         }
 
         ShowUpgradePanel(tower);
-        ShowTowerDescription(tower);
     }
     public void UpdateCurrencyUI(int newAmount)
     {
