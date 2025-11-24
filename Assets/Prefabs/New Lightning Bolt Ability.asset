@@ -13,8 +13,9 @@ MonoBehaviour:
   m_Name: New Lightning Bolt Ability
   m_EditorClassIdentifier: Assembly-CSharp::LightningBoltAbility
   abilityName: LightningBolt
-  manaCost: 60
-  cooldown: 15
-  LightningBoltPrefab: {fileID: 0}
-  range: 10
+  manaCost: 1
+  cooldown: 1
+  projectilePrefab: {fileID: 7761160474859753642, guid: 645eb370f623ecb4596d08164586aaef, type: 3}
   damage: 50
+  travelDistance: 20
+  castYOffset: 1.2

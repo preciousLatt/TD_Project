@@ -15,6 +15,9 @@ MonoBehaviour:
   abilityName: BoulderToss
   manaCost: 50
   cooldown: 10
-  BoulderTossPrefab: {fileID: 0}
-  range: 10
+  projectilePrefab: {fileID: 8069179491592165272, guid: 86ce4b8ec834f1744910633dca074e45, type: 3}
   damage: 50
+  explosionRadius: 4
+  arcHeight: 5
+  travelTime: 1.2
+  maxCastRange: 15

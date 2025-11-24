@@ -19,6 +19,7 @@ public class GameManager : Singleton<GameManager>
     private float nexusHealth;
     public int currentMoney;
     private readonly List<Enemy> enemies = new List<Enemy>();
+    public IReadOnlyList<Enemy> Enemies => enemies;
     public event Action<Enemy> OnEnemySpawned;
     public event Action<Enemy> OnEnemyDied;
     public event Action<float> OnNexusDamaged;
@@ -105,6 +106,24 @@ public class GameManager : Singleton<GameManager>
         {
             Enemy e = enemies[i];
             if (e == null || e.IsDead) continue;
+            float sqr = (e.transform.position - fromPosition).sqrMagnitude;
+            if (sqr < bestSqr)
+            {
+                bestSqr = sqr;
+                closest = e;
+            }
+        }
+        return closest;
+    }
+    public Enemy GetClosestEnemy(Vector3 fromPosition, List<Enemy> ignore)
+    {
+        Enemy closest = null;
+        float bestSqr = float.PositiveInfinity;
+        for (int i = 0; i < enemies.Count; i++)
+        {
+            Enemy e = enemies[i];
+            if (e == null || e.IsDead) continue;
+            if (ignore != null && ignore.Contains(e)) continue;
             float sqr = (e.transform.position - fromPosition).sqrMagnitude;
             if (sqr < bestSqr)
             {

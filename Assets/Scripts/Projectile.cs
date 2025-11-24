@@ -7,7 +7,9 @@ public class Projectile : MonoBehaviour
     [SerializeField] private float lifeTime = 8f; 
     [SerializeField] private Vector3 rotationOffset = new Vector3(90f, 0f, 0f);
     [SerializeField] private float rotationSpeed = 720f;
-    [SerializeField] private float damage = 25f;
+    [SerializeField] protected float damage = 25f;
+    public float Damage => damage;
+
 
     private Enemy targetEnemy = null;
     private Vector3 targetPosition;

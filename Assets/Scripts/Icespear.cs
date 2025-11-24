@@ -1,14 +1,30 @@
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Hero/Ability/IceSpear")]
+[CreateAssetMenu(menuName = "Abilities/Ice Spear")]
 public class IceSpearAbility : HeroAbility
 {
-    public GameObject IceSpearPrefab;
-    public float range = 10f;
-    public float damage = 50f;
+    public IceSpearProjectile projectilePrefab;
+    public float damage = 30f;
+    public float maxDistance = 15f;
 
     public override void Activate(HeroCombat hero, HeroStats stats)
     {
-        Debug.Log($"{abilityName} cast!");
+        Camera cam = Camera.main;
+        if (cam == null) return;
+
+        Ray ray = cam.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, 300f, LayerMask.GetMask("Ground")))
+        {
+            Vector3 spawnPos = hero.transform.position + Vector3.up * 1.2f;
+
+            Vector3 dir = hit.point - spawnPos;
+            dir.y = 0f;
+            dir.Normalize();
+
+            Vector3 targetPos = spawnPos + dir * maxDistance;
+
+            Projectile.Spawn(projectilePrefab, spawnPos, targetPos, damage);
+        }
     }
 }

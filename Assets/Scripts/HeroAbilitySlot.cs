@@ -21,9 +21,12 @@ public class HeroAbilitySlot : MonoBehaviour
         this.ability = ability;
 
         if (ability != null)
-            manaCostText.text = $"{ability.manaCost}";
-        else
-            manaCostText.text = "";
+            if (manaCostText != null)
+            {
+                manaCostText.text = $"{ability.manaCost}";
+            }
+        //else
+                //manaCostText.text = "";
 
         button.onClick.RemoveAllListeners();
         if (ability != null)
