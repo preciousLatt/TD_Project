@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Pool;
 
 public class Projectile : MonoBehaviour
 {
@@ -9,7 +10,8 @@ public class Projectile : MonoBehaviour
     [SerializeField] protected float rotationSpeed = 720f;
     [SerializeField] protected float damage = 25f;
     [SerializeField] protected GameObject impactVFX; // Optional: visual effect
-
+    private IObjectPool<Projectile> pool;
+    public void SetPool(IObjectPool<Projectile> pool) => this.pool = pool;
     public float Damage => damage;
 
     protected Enemy targetEnemy = null;
@@ -70,7 +72,7 @@ public class Projectile : MonoBehaviour
         if (!isLaunched) return;
 
         lifeTimer -= Time.deltaTime;
-        if (lifeTimer <= 0f) { Destroy(gameObject); return; }
+        if (lifeTimer <= 0f) { ReleaseToPool(); return; }
 
         // 1. Determine where we are going
         Vector3 currentTargetPos;
@@ -79,7 +81,7 @@ public class Projectile : MonoBehaviour
             if (targetEnemy == null || targetEnemy.IsDead)
             {
                 // If enemy died while bullet was in air, just destroy or hit ground
-                Destroy(gameObject);
+                ReleaseToPool();
                 return;
             }
             currentTargetPos = targetEnemy.transform.position;
@@ -132,6 +134,11 @@ public class Projectile : MonoBehaviour
         if (impactVFX != null)
             Instantiate(impactVFX, transform.position, Quaternion.identity);
 
-        Destroy(gameObject);
+        ReleaseToPool();
+    }
+    private void ReleaseToPool()
+    {
+        if (pool != null) pool.Release(this);
+        else Destroy(gameObject);
     }
 }

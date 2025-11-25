@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-/*[Serializable]
+[Serializable]
 public class WaveContainer
 {
     public List<WaveDefinition> waves = new List<WaveDefinition>();
@@ -20,4 +20,4 @@ public class EnemySpawnGroup
     public int count;        
     public float rate;       
     public float initialDelay; 
-}*/
+}

@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.Pool; // Required for Object Pooling
 
 public class Enemy : MonoBehaviour
 {
@@ -8,8 +9,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float defaultHealth = 100f;
     [SerializeField] private float waypointArrivalThreshold = 1.0f;
 
-    private float baseSpeed; // The normal speed of the enemy
-    private float currentSpeed; // The actual speed (affected by slows)
+    private float baseSpeed;
+    private float currentSpeed;
     private float health;
 
     private Transform currentTarget;
@@ -19,9 +20,13 @@ public class Enemy : MonoBehaviour
     private bool notifiedDeath;
     public bool IsDead => health <= 0;
 
-    // --- NEW: Public property to check slow state ---
+    // --- Object Pooling Reference ---
+    private IObjectPool<Enemy> pool;
+    public void SetPool(IObjectPool<Enemy> pool) => this.pool = pool;
+
+    // --- Slow System Properties ---
     public bool IsSlowed => slowCoroutine != null;
-    // ------------------------------------------------
+    private Coroutine slowCoroutine;
 
     // Call this from your spawner/factory
     public void Initialize(float moveSpeed, float hp, Transform nexus)
@@ -32,6 +37,9 @@ public class Enemy : MonoBehaviour
         finalNexusTarget = nexus;
         currentPathLevel = -1;
 
+        // Ensure state is clean on re-use
+        notifiedDeath = false;
+
         FindNextTarget();
     }
 
@@ -39,8 +47,6 @@ public class Enemy : MonoBehaviour
     {
         if (health <= 0f) health = defaultHealth;
         if (baseSpeed <= 0f) baseSpeed = defaultSpeed;
-
-        // Ensure current speed is set if not initialized via spawner
         if (currentSpeed <= 0f) currentSpeed = baseSpeed;
 
         if (finalNexusTarget == null)
@@ -58,12 +64,22 @@ public class Enemy : MonoBehaviour
         GameManager.Instance?.RegisterEnemy(this);
     }
 
-    // --- Slow System ---
-    private Coroutine slowCoroutine;
+    private void OnDisable()
+    {
+        // When returned to pool, reset internal state
+        if (slowCoroutine != null)
+        {
+            StopCoroutine(slowCoroutine);
+            slowCoroutine = null;
+        }
+        currentSpeed = baseSpeed;
+    }
 
     public void ApplySlow(float slowPct, float duration)
     {
-        // slowPct of 0.3f means 30% slower
+        // FIX: Do not attempt to start a coroutine if the enemy is already dead/inactive
+        if (!gameObject.activeInHierarchy || IsDead) return;
+
         if (slowCoroutine != null) StopCoroutine(slowCoroutine);
         slowCoroutine = StartCoroutine(SlowRoutine(slowPct, duration));
     }
@@ -75,7 +91,6 @@ public class Enemy : MonoBehaviour
         currentSpeed = baseSpeed;
         slowCoroutine = null;
     }
-    // ------------------------
 
     private void FindNextTarget()
     {
@@ -107,7 +122,6 @@ public class Enemy : MonoBehaviour
         if (distSq > 0.001f)
         {
             Vector3 moveDir = direction.normalized;
-            // Use currentSpeed instead of speed
             transform.position += moveDir * currentSpeed * Time.deltaTime;
             transform.forward = moveDir;
         }
@@ -136,11 +150,21 @@ public class Enemy : MonoBehaviour
             notifiedDeath = true;
             GameManager.Instance?.NotifyEnemyDied(this);
         }
-        Destroy(gameObject);
+
+        // Return to pool if it exists, otherwise standard Destroy
+        if (pool != null)
+        {
+            pool.Release(this);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
     }
 
     private void OnDestroy()
     {
+        // Failsafe if destroyed by scene unloading or logic outside Die()
         if (!notifiedDeath)
         {
             notifiedDeath = true;

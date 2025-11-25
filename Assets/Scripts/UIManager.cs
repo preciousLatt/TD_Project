@@ -1,29 +1,68 @@
 ﻿using TMPro;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UIManager : Singleton.Singleton<UIManager>
 {
+    [Header(" Panels ")]
     [SerializeField] private GameObject upgradePanel;
+    [SerializeField] private GameObject pausePanel;
+
+    [Header(" Upgrade UI ")]
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject upgradeButtonPrefab;
+
+    [Header(" HUD ")]
     [SerializeField] private TextMeshProUGUI currencyText;
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
     [SerializeField] private HeroAbilitySlot[] abilitySlots;
-    [SerializeField] private GameObject pausePanel;
 
+    [Header(" Wave UI ")]
+    [SerializeField] private TextMeshProUGUI waveText;      // Assign in Inspector
+    [SerializeField] private Button startWaveButton;        // Assign in Inspector
 
     private Tower currentTower;
+    private RebindRowUI[] rebindRows;
+
+    // --- RESTORED PUBLIC PROPERTIES ---
     public Tower CurrentTower => currentTower;
     public HeroAbilitySlot[] AbilitySlots => abilitySlots;
-    private RebindRowUI[] rebindRows;
+    // ----------------------------------
 
     private void Awake()
     {
         rebindRows = FindObjectsOfType<RebindRowUI>(true);
+
+        // Hook up the start button automatically
+        if (startWaveButton != null)
+        {
+            startWaveButton.onClick.AddListener(() => {
+                if (WaveManager.Instance != null)
+                    WaveManager.Instance.StartNextWave();
+            });
+        }
     }
+
+    // --- Wave Logic ---
+    public void UpdateWaveUI(int current, int total)
+    {
+        if (waveText != null)
+            waveText.text = $"Wave: {current} / {total}";
+    }
+
+    public void SetWaveButtonState(bool interactable)
+    {
+        if (startWaveButton != null)
+        {
+            startWaveButton.interactable = interactable;
+            var txt = startWaveButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (txt != null)
+                txt.text = interactable ? "Start Wave" : "Spawning...";
+        }
+    }
+    // ------------------
+
     public void SetupHeroUI(HeroCombat hero)
     {
         if (abilitySlots != null)
@@ -32,11 +71,13 @@ public class UIManager : Singleton.Singleton<UIManager>
                 abilitySlots[i].Bind(hero, hero.GetAbility(i));
         }
     }
+
     public void ShowPauseMenu(bool show)
     {
         if (pausePanel != null)
             pausePanel.SetActive(show);
     }
+
     public void UpdateHeroBars(HeroStats stats)
     {
         if (healthBar != null)
@@ -44,6 +85,7 @@ public class UIManager : Singleton.Singleton<UIManager>
         if (manaBar != null)
             manaBar.value = stats.currentMana / stats.maxMana;
     }
+
     public void SetActiveTower(Tower tower)
     {
         if (tower == currentTower) return;
@@ -57,11 +99,13 @@ public class UIManager : Singleton.Singleton<UIManager>
 
         ShowUpgradePanel(tower);
     }
+
     public void UpdateCurrencyUI(int newAmount)
     {
         if (currencyText != null)
             currencyText.text = $"${newAmount}";
     }
+
     public void ShowUpgradePanel(Tower tower)
     {
         if (tower == null) return;
@@ -96,6 +140,7 @@ public class UIManager : Singleton.Singleton<UIManager>
         foreach (Transform child in buttonContainer)
             Destroy(child.gameObject);
     }
+
     public void UpdateRemapUI()
     {
         if (rebindRows == null || rebindRows.Length == 0)
