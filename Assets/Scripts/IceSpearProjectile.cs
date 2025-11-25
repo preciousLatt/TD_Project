@@ -19,7 +19,7 @@ public class IceSpearProjectile : Projectile
         }
     }
 
-    protected override void OnReachedTarget()
+    protected void OnReachedTarget()
     {
         Destroy(gameObject); 
     }

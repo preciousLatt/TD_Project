@@ -22,7 +22,7 @@ public class UIManager : Singleton.Singleton<UIManager>
 
     private void Awake()
     {
-        rebindRows = FindObjectsOfType<RebindRowUI>(true); 
+        rebindRows = FindObjectsOfType<RebindRowUI>(true);
     }
     public void SetupHeroUI(HeroCombat hero)
     {

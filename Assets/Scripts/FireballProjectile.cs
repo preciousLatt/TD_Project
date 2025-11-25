@@ -10,7 +10,7 @@ public class FireballProjectile : Projectile
 
     private bool exploded = false;
 
-    protected override void OnReachedTarget()
+    protected void OnReachedTarget()
     {
         Explode();
     }

@@ -2,37 +2,30 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] private float speed = 12f;
-    [SerializeField] private float stopDistance = 0.1f;
-    [SerializeField] private float lifeTime = 8f; 
-    [SerializeField] private Vector3 rotationOffset = new Vector3(90f, 0f, 0f);
-    [SerializeField] private float rotationSpeed = 720f;
+    [SerializeField] protected float speed = 12f;
+    [SerializeField] protected float stopDistance = 0.1f;
+    [SerializeField] protected float lifeTime = 8f;
+    [SerializeField] protected Vector3 rotationOffset = new Vector3(90f, 0f, 0f);
+    [SerializeField] protected float rotationSpeed = 720f;
     [SerializeField] protected float damage = 25f;
+    [SerializeField] protected GameObject impactVFX; // Optional: visual effect
+
     public float Damage => damage;
 
+    protected Enemy targetEnemy = null;
+    protected Vector3 targetPosition;
+    protected bool useEnemyTarget = false;
 
-    private Enemy targetEnemy = null;
-    private Vector3 targetPosition;
-    private bool useEnemyTarget = false;
+    protected bool isLaunched = false;
+    protected float lifeTimer = 0f;
 
-    private bool isLaunched = false;
-    private float lifeTimer = 0f;
-
-
+    // --- STATIC SPAWN METHODS REMAIN THE SAME ---
     public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 0f)
     {
-        if (prefab == null)
-        {
-            return null;
-        }
-
+        if (prefab == null) return null;
         GameObject go = Instantiate(prefab.gameObject, spawnPos, Quaternion.identity);
         Projectile p = go.GetComponent<Projectile>();
-        if (p == null)
-        {
-            Destroy(go);
-            return null;
-        }
+        if (p == null) { Destroy(go); return null; }
 
         p.damage = damage;
         p.InitializeTarget(enemyTarget);
@@ -41,40 +34,25 @@ public class Projectile : MonoBehaviour
 
     public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Vector3 targetPos, float damage = 2f)
     {
-        if (prefab == null)
-        {
-            return null;
-        }
-
+        if (prefab == null) return null;
         GameObject go = Instantiate(prefab.gameObject, spawnPos, Quaternion.identity);
         Projectile p = go.GetComponent<Projectile>();
-        if (p == null)
-        {
-            Destroy(go);
-            return null;
-        }
+        if (p == null) { Destroy(go); return null; }
 
         p.damage = damage;
         p.InitializeTarget(targetPos);
         return p;
     }
 
- 
+    // --- INITIALIZATION ---
     public void InitializeTarget(Enemy enemy)
     {
-        if (enemy == null)
-        {
-            return;
-        }
-
+        if (enemy == null) return;
         targetEnemy = enemy;
         useEnemyTarget = true;
         isLaunched = true;
         lifeTimer = lifeTime;
-
-        Vector3 dir = (targetEnemy.transform.position - transform.position);
-        if (dir.sqrMagnitude > 0.0001f)
-            transform.rotation = Quaternion.LookRotation(dir.normalized) * Quaternion.Euler(rotationOffset);
+        RotateTowardsTarget();
     }
 
     public void InitializeTarget(Vector3 targetPos)
@@ -83,29 +61,25 @@ public class Projectile : MonoBehaviour
         useEnemyTarget = false;
         isLaunched = true;
         lifeTimer = lifeTime;
-
-        Vector3 dir = (targetPosition - transform.position);
-        if (dir.sqrMagnitude > 0.0001f)
-            transform.rotation = Quaternion.LookRotation(dir.normalized) * Quaternion.Euler(rotationOffset);
+        RotateTowardsTarget();
     }
 
-    private void Update()
+    // --- UPDATE LOOP ---
+    protected virtual void Update()
     {
         if (!isLaunched) return;
 
         lifeTimer -= Time.deltaTime;
-        if (lifeTimer <= 0f)
-        {
-            Destroy(gameObject);
-            return;
-        }
+        if (lifeTimer <= 0f) { Destroy(gameObject); return; }
 
+        // 1. Determine where we are going
         Vector3 currentTargetPos;
         if (useEnemyTarget)
         {
             if (targetEnemy == null || targetEnemy.IsDead)
             {
-                OnReachedTarget();
+                // If enemy died while bullet was in air, just destroy or hit ground
+                Destroy(gameObject);
                 return;
             }
             currentTargetPos = targetEnemy.transform.position;
@@ -115,35 +89,22 @@ public class Projectile : MonoBehaviour
             currentTargetPos = targetPosition;
         }
 
+        // 2. Check Distance (Hit Detection)
         Vector3 currentPos = transform.position;
-        Vector3 toTarget = currentTargetPos - currentPos;
-        float distance = toTarget.magnitude;
+        float distance = Vector3.Distance(currentPos, currentTargetPos);
 
         if (distance <= stopDistance)
         {
-            if (useEnemyTarget)
-            {
-                if (GameManager.Instance != null)
-                {
-                    GameManager.Instance.DamageEnemy(targetEnemy, damage);
-                }
-                else
-                {
-                    targetEnemy.TakeDamage(damage);
-                }
-            }
-            else
-            {
-            }
-
-            Destroy(gameObject);
+            HitTarget(); // Calls the virtual method
             return;
         }
 
+        // 3. Movement
         Vector3 newPos = Vector3.MoveTowards(currentPos, currentTargetPos, speed * Time.deltaTime);
-        Vector3 movement = newPos - currentPos;
         transform.position = newPos;
 
+        // 4. Rotation
+        Vector3 movement = newPos - currentPos;
         if (movement.sqrMagnitude > 0.000001f)
         {
             Quaternion desired = Quaternion.LookRotation(movement.normalized) * Quaternion.Euler(rotationOffset);
@@ -151,15 +112,26 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    protected virtual void OnReachedTarget()
+    private void RotateTowardsTarget()
+    {
+        Vector3 tPos = useEnemyTarget && targetEnemy != null ? targetEnemy.transform.position : targetPosition;
+        Vector3 dir = tPos - transform.position;
+        if (dir.sqrMagnitude > 0.001f)
+            transform.rotation = Quaternion.LookRotation(dir.normalized) * Quaternion.Euler(rotationOffset);
+    }
+
+    // --- VIRTUAL HIT LOGIC ---
+    // This is what we override in the upgrade scripts
+    protected virtual void HitTarget()
     {
         if (useEnemyTarget && targetEnemy != null)
         {
-            if (GameManager.Instance != null)
-                GameManager.Instance.DamageEnemy(targetEnemy, damage);
+            GameManager.Instance?.DamageEnemy(targetEnemy, damage);
         }
+
+        if (impactVFX != null)
+            Instantiate(impactVFX, transform.position, Quaternion.identity);
 
         Destroy(gameObject);
     }
-
 }
