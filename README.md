@@ -10,6 +10,12 @@ The scenario's purpose will is to showcase all the design patterns so far done i
 
 ## Post-Midterm-Progress (Final)
 
+### Game Design Pattern improvements from the previous assignment
+
+There was significant changes to the command pattern. From previous assignment, it was refunding (undoing) an absurd amount of currency while also the money logic (not the command pattern) was being handled by game manager. We made these changes to pull cost from the tower class (before it was all game manager). 
+
+Significant improvements to the scene and environment spawning. Before it was instantiated statically and now we have object pooling.
+
 ### Performance Profiling of Object pooling vs Without Object Pooling
 
 The idea is simple, we instantiate objects via traditional and tedious way that accumulates garbage memory and use Unity's profiling tool to compare with object pooling's performance. In our game, we use object pooling to better our performance of spawning the environment - a random forest at game start. Due to the nature of the game, it is difficult to gauge performance with little objects and projectiles in play, so we exasperated the material being spawned (8000 trees) to grasp performance profiling.
