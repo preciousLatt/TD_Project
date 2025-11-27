@@ -9,7 +9,7 @@ public class Projectile : MonoBehaviour
     [SerializeField] protected Vector3 rotationOffset = new Vector3(90f, 0f, 0f);
     [SerializeField] protected float rotationSpeed = 720f;
     [SerializeField] protected float damage = 25f;
-    [SerializeField] protected GameObject impactVFX; // Optional: visual effect
+    [SerializeField] protected GameObject impactVFX;
     private IObjectPool<Projectile> pool;
     public void SetPool(IObjectPool<Projectile> pool) => this.pool = pool;
     public float Damage => damage;
@@ -21,7 +21,6 @@ public class Projectile : MonoBehaviour
     protected bool isLaunched = false;
     protected float lifeTimer = 0f;
 
-    // --- STATIC SPAWN METHODS REMAIN THE SAME ---
     public static Projectile Spawn(Projectile prefab, Vector3 spawnPos, Enemy enemyTarget, float damage = 0f)
     {
         if (prefab == null) return null;
@@ -46,7 +45,6 @@ public class Projectile : MonoBehaviour
         return p;
     }
 
-    // --- INITIALIZATION ---
     public void InitializeTarget(Enemy enemy)
     {
         if (enemy == null) return;
@@ -66,7 +64,6 @@ public class Projectile : MonoBehaviour
         RotateTowardsTarget();
     }
 
-    // --- UPDATE LOOP ---
     protected virtual void Update()
     {
         if (!isLaunched) return;
@@ -74,13 +71,11 @@ public class Projectile : MonoBehaviour
         lifeTimer -= Time.deltaTime;
         if (lifeTimer <= 0f) { ReleaseToPool(); return; }
 
-        // 1. Determine where we are going
         Vector3 currentTargetPos;
         if (useEnemyTarget)
         {
             if (targetEnemy == null || targetEnemy.IsDead)
             {
-                // If enemy died while bullet was in air, just destroy or hit ground
                 ReleaseToPool();
                 return;
             }
@@ -91,21 +86,18 @@ public class Projectile : MonoBehaviour
             currentTargetPos = targetPosition;
         }
 
-        // 2. Check Distance (Hit Detection)
         Vector3 currentPos = transform.position;
         float distance = Vector3.Distance(currentPos, currentTargetPos);
 
         if (distance <= stopDistance)
         {
-            HitTarget(); // Calls the virtual method
+            HitTarget(); 
             return;
         }
 
-        // 3. Movement
         Vector3 newPos = Vector3.MoveTowards(currentPos, currentTargetPos, speed * Time.deltaTime);
         transform.position = newPos;
 
-        // 4. Rotation
         Vector3 movement = newPos - currentPos;
         if (movement.sqrMagnitude > 0.000001f)
         {
@@ -122,8 +114,6 @@ public class Projectile : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(dir.normalized) * Quaternion.Euler(rotationOffset);
     }
 
-    // --- VIRTUAL HIT LOGIC ---
-    // This is what we override in the upgrade scripts
     protected virtual void HitTarget()
     {
         if (useEnemyTarget && targetEnemy != null)

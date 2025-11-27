@@ -8,28 +8,33 @@ public class LightningBoltAbility : HeroAbility
     public float travelDistance = 25f;
     public float castYOffset = 1.2f;
 
-    public override void Activate(HeroCombat hero, HeroStats stats)
+    protected override bool Activate(HeroCombat hero, HeroStats stats)
     {
         Camera cam = Camera.main;
-        if (cam == null) return;
+        if (cam == null) return false;
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
-  
         if (!Physics.Raycast(ray, out RaycastHit hit, 300f, LayerMask.GetMask("Ground")))
-            return;
+            return false;
 
         Vector3 spawnPos = hero.transform.position + Vector3.up * castYOffset;
 
         Vector3 dir = hit.point - spawnPos;
-        dir.y = 0f; // Force direction to be horizontal
+        dir.y = 0f; 
         dir.Normalize();
 
         Vector3 endPos = spawnPos + dir * travelDistance;
 
+        Quaternion lookRot = Quaternion.LookRotation(dir);
+
+        Quaternion spawnRot = lookRot * Quaternion.Euler(90f, 0f, 0f);
+
         LightningBoltProjectile bolt =
-            Instantiate(projectilePrefab, spawnPos, Quaternion.LookRotation(dir));
+            Instantiate(projectilePrefab, spawnPos, spawnRot);
 
         bolt.InitDirectionOnly(dir, endPos, damage);
+        bolt.transform.rotation = Quaternion.LookRotation(dir) * Quaternion.Euler(90f, 0f, 0f);
+        return true; 
     }
 }

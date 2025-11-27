@@ -7,10 +7,10 @@ public class IceSpearAbility : HeroAbility
     public float damage = 30f;
     public float maxDistance = 15f;
 
-    public override void Activate(HeroCombat hero, HeroStats stats)
+    protected override bool Activate(HeroCombat hero, HeroStats stats)
     {
         Camera cam = Camera.main;
-        if (cam == null) return;
+        if (cam == null) return false;
 
         Ray ray = cam.ScreenPointToRay(Input.mousePosition);
 
@@ -25,6 +25,9 @@ public class IceSpearAbility : HeroAbility
             Vector3 targetPos = spawnPos + dir * maxDistance;
 
             Projectile.Spawn(projectilePrefab, spawnPos, targetPos, damage);
+            return true; 
         }
+
+        return false; 
     }
 }

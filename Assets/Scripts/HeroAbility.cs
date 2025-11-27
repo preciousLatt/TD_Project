@@ -1,53 +1,41 @@
 using UnityEngine;
-using System.Collections.Generic;
 
 public abstract class HeroAbility : ScriptableObject
 {
     public string abilityName;
-    public float manaCost = 20f;
-    public float cooldown = 5f;
+    public float manaCost;
+    public float cooldown;
+    public Sprite icon;
 
-    private Dictionary<HeroCombat, float> cooldownTimers = new();
-
-    public bool TryUse(HeroCombat hero, HeroStats stats)
+    // We add 'costMultiplier' with a default of 1f to prevent breaking other calls
+    public void TryUse(HeroCombat combat, HeroStats stats, float costMultiplier = 1f)
     {
-        if (!cooldownTimers.ContainsKey(hero))
-            cooldownTimers[hero] = 0;
+        // 1. Calculate actual cost based on Game State
+        float finalCost = manaCost * costMultiplier;
 
-        if (cooldownTimers[hero] > 0)
+        // 2. Check Mana
+        if (stats.currentMana < finalCost)
         {
-            Debug.Log($"{abilityName} is still on cooldown: {cooldownTimers[hero]:F1}s");
-            return false;
+            Debug.Log($"Not enough mana! Need {finalCost}");
+            return;
         }
 
-        if (stats.currentMana < manaCost)
+        // 3. Activate
+        if (Activate(combat, stats))
         {
-            Debug.Log("Not enough mana");
-            return false;
-        }
+            // 4. Deduct Mana (Apply the modified cost)
+            stats.currentMana -= finalCost;
 
-        if (!stats.SpendMana(manaCost))
-        {
-            return false;
-        }
+            // 5. Update UI
+            if (UIManager.Instance != null)
+                UIManager.Instance.UpdateHeroBars(stats);
 
-        Activate(hero, stats);
-        cooldownTimers[hero] = cooldown;
-        hero.StartAbilityCooldownUI(this, cooldown);
-        hero.StartCoroutine(CooldownRoutine(hero));
-        return true;
+            // 6. Start Cooldown
+            combat.StartAbilityCooldownUI(this, cooldown);
+        }
     }
 
-    private System.Collections.IEnumerator CooldownRoutine(HeroCombat hero)
-    {
-        while (cooldownTimers[hero] > 0)
-        {
-            cooldownTimers[hero] -= Time.deltaTime;
-            yield return null;
-        }
-
-        cooldownTimers[hero] = 0;
-    }
-
-    public abstract void Activate(HeroCombat hero, HeroStats stats);
+    // Abstract method for specific ability logic (Fireball, Heal, etc.)
+    // Returns true if successful
+    protected abstract bool Activate(HeroCombat combat, HeroStats stats);
 }
