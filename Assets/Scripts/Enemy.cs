@@ -154,7 +154,6 @@ public class Enemy : MonoBehaviour
         if (!notifiedDeath)
         {
             notifiedDeath = true;
-            // Default destroy (e.g. scene unload) gives no reward to be safe, or true if preferred
             GameManager.Instance?.NotifyEnemyDied(this, false);
         }
     }
@@ -164,7 +163,6 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Nexus"))
         {
             GameManager.Instance?.DamageNexus(10f);
-            // CHANGED: Call Die with false so no gold is awarded
             Die(false);
         }
         else if (other.CompareTag("Player"))

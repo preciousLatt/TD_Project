@@ -387,7 +387,9 @@ MonoBehaviour:
   attackRange: 10
   fireRate: 1
   damage: 10
+  cost: 200
   projectilePrefab: {fileID: 5675262803879095001, guid: 011397e3501772949924c5a83aaa060c, type: 3}
+  targetingPriority: 0
   upgradePaths: []
 --- !u!1 &6517125826316685810
 GameObject:

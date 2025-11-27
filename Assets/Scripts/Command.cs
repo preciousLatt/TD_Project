@@ -38,3 +38,4 @@ public class AbilityCommand : Command
         hero.UseAbility(abilityIndex);
     }
 }
+

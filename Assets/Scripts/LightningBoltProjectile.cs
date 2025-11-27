@@ -79,13 +79,11 @@ public class LightningBoltProjectile : MonoBehaviour
 
             if (last != null && next != null)
             {
-                // Assume enemies have a center point slightly above their feet for visuals
                 Vector3 startPoint = last.transform.position + Vector3.up * 1f;
                 Vector3 endPoint = next.transform.position + Vector3.up * 1f;
                 SpawnLightningLine(startPoint, endPoint);
             }
 
-            // Update state
             _hitSet.Add(next);
             last = next;
             _chainsDone++;

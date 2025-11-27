@@ -9,12 +9,12 @@ public class Tower : MonoBehaviour
         NotSlowed
     }
 
-    [Header("Stats")]
     [SerializeField] public float attackRange = 5f;
     [SerializeField] private float fireRate = 1f;
     [SerializeField] private float damage = 10f;
 
-    [Header("Setup")]
+    [SerializeField] public int cost = 100;
+
     [SerializeField] private Projectile projectilePrefab;
     [SerializeField] private TargetingPriority targetingPriority = TargetingPriority.Closest;
 
@@ -51,27 +51,22 @@ public class Tower : MonoBehaviour
     {
         if (GameManager.Instance == null) return null;
 
-        // Access the list of enemies directly from GameManager
-        // Assuming GameManager exposes: public IReadOnlyList<Enemy> Enemies => enemies;
+
         var enemies = GameManager.Instance.Enemies;
         if (enemies == null || enemies.Count == 0) return null;
 
         Enemy bestEnemy = null;
         float closestDistSqr = attackRange * attackRange;
 
-        // --- STRATEGY: NOT SLOWED ---
         if (targetingPriority == TargetingPriority.NotSlowed)
         {
-            // First pass: Look for Closest NON-SLOWED enemy in range
             foreach (var e in enemies)
             {
                 if (e == null || e.IsDead) continue;
 
-                // Check Range
                 float distSqr = (e.transform.position - transform.position).sqrMagnitude;
                 if (distSqr > closestDistSqr) continue;
 
-                // Priority Check: Is he already slowed?
                 if (!e.IsSlowed)
                 {
                     closestDistSqr = distSqr;
@@ -79,16 +74,11 @@ public class Tower : MonoBehaviour
                 }
             }
 
-            // If we found a non-slowed enemy, return it
             if (bestEnemy != null) return bestEnemy;
 
-            // FALLBACK: If everyone is slowed (or no one unslowed is in range), 
-            // just shoot the closest one (fall through to Closest logic below)
-            // reset distance check
             closestDistSqr = attackRange * attackRange;
         }
 
-        // --- STRATEGY: CLOSEST (Default / Fallback) ---
         foreach (var e in enemies)
         {
             if (e == null || e.IsDead) continue;
@@ -104,7 +94,6 @@ public class Tower : MonoBehaviour
         return bestEnemy;
     }
 
-    // --- UPGRADE SYSTEM (Unchanged) ---
     public UpgradeStep GetNextUpgrade(int pathIndex)
     {
         if (pathIndex < 0 || pathIndex >= upgradePaths.Count) return null;
@@ -137,7 +126,6 @@ public class Tower : MonoBehaviour
                 newTower.SetFireRate(newFireRate);
                 newTower.SetUpgradeIndexes(newIndexes);
                 newTower.damage = newDamage;
-                // Preserve targeting priority if needed, or let prefab dictate it
                 newTower.targetingPriority = this.targetingPriority;
             }
 

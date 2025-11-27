@@ -1,19 +1,19 @@
 using System.Collections.Generic;
 using UnityEngine;
-using Singleton; 
+using Singleton;
 
 public class BuildManager : Singleton<BuildManager>
 {
-    [SerializeField] private Camera playerCamera;           
-    [SerializeField] private LayerMask groundMask;         
-    [SerializeField] private LayerMask towerMask;           
-    [SerializeField] private float placementCheckPadding = 1f; 
+    [SerializeField] private Camera playerCamera;
+    [SerializeField] private LayerMask groundMask;
+    [SerializeField] private LayerMask towerMask;
+    [SerializeField] private float placementCheckPadding = 1f;
 
     private GameObject currentValidPreviewPrefab;
     private GameObject currentInvalidPreviewPrefab;
     private GameObject currentActualPrefab;
 
-    private GameObject currentPreviewInstance;  
+    private GameObject currentPreviewInstance;
     private bool lastCanPlaceState = true;
 
     private Renderer[] previewRenderersCache;
@@ -33,6 +33,35 @@ public class BuildManager : Singleton<BuildManager>
         HandleInput();
     }
 
+    public void SellTower(GameObject towerInstance)
+    {
+        if (towerInstance == null) return;
+
+        int cost = 100; 
+
+        Tower towerScript = towerInstance.GetComponent<Tower>();
+        if (towerScript != null)
+        {
+            cost = towerScript.cost;
+        }
+
+        int refundAmount = Mathf.FloorToInt(cost * 0.5f);
+
+        GameManager.Instance.AddMoney(refundAmount);
+
+        if (UIManager.Instance != null)
+        {
+            UIManager.Instance.ShowGoldPopup(towerInstance.transform.position, refundAmount);
+
+            if (UIManager.Instance.CurrentTower != null && UIManager.Instance.CurrentTower.gameObject == towerInstance)
+            {
+                UIManager.Instance.SetActiveTower(null);
+            }
+        }
+
+        Destroy(towerInstance);
+    }
+
     public void StartPlacing(GameObject validPreviewPrefab, GameObject invalidPreviewPrefab, GameObject actualPrefab)
     {
         CancelPlacement();
@@ -42,9 +71,7 @@ public class BuildManager : Singleton<BuildManager>
         currentActualPrefab = actualPrefab;
 
         if (currentValidPreviewPrefab == null || currentInvalidPreviewPrefab == null || currentActualPrefab == null)
-        {
             return;
-        }
 
         CreatePreviewInstance(currentValidPreviewPrefab);
         previewCheckRadius = ComputePreviewCheckRadius(currentPreviewInstance);
@@ -63,7 +90,6 @@ public class BuildManager : Singleton<BuildManager>
         currentActualPrefab = null;
         previewRenderersCache = null;
     }
-
 
     private void UpdatePreviewPositionAndValidity()
     {
@@ -121,13 +147,9 @@ public class BuildManager : Singleton<BuildManager>
 
     private void ConfirmPlacement(Vector3 worldPos, Quaternion rot)
     {
-        if (currentActualPrefab == null)
-        {
-            return;
-        }
-        
-        int towerCost = currentActualPrefab.GetComponent<TowerCost>()?.cost ?? 100; 
-        var cmd = new BuildTowerCommand(currentActualPrefab, worldPos, rot, towerCost);
+        if (currentActualPrefab == null) return;
+
+        var cmd = new BuildTowerCommand(currentActualPrefab, worldPos, rot);
         CommandManager.Instance.ExecuteCommand(cmd);
 
         Destroy(currentPreviewInstance);
@@ -137,17 +159,6 @@ public class BuildManager : Singleton<BuildManager>
         currentInvalidPreviewPrefab = null;
         currentActualPrefab = null;
         previewRenderersCache = null;
-        /*
-        GameObject placed = Instantiate(currentActualPrefab, worldPos, rot);
-        
-        Destroy(currentPreviewInstance);
-        currentPreviewInstance = null;
-
-        currentValidPreviewPrefab = null;
-        currentInvalidPreviewPrefab = null;
-        currentActualPrefab = null;
-        previewRenderersCache = null;
-        */
     }
 
     private void SwapPreviewPrefabInstance(bool wantValid)
@@ -184,12 +195,11 @@ public class BuildManager : Singleton<BuildManager>
         if (preview == null) return 0.5f;
 
         float maxExtent = 0f;
-
         Renderer[] rends = preview.GetComponentsInChildren<Renderer>(true);
         foreach (var r in rends)
         {
             if (r == null) continue;
-            float ext = r.bounds.extents.magnitude; 
+            float ext = r.bounds.extents.magnitude;
             if (ext > maxExtent) maxExtent = ext;
         }
 
@@ -210,16 +220,10 @@ public class BuildManager : Singleton<BuildManager>
         if (go == null) return;
 
         var monos = go.GetComponentsInChildren<MonoBehaviour>(true);
-        foreach (var mb in monos)
-        {
-            mb.enabled = false;
-        }
+        foreach (var mb in monos) mb.enabled = false;
 
         var cols = go.GetComponentsInChildren<Collider>(true);
-        foreach (var c in cols)
-        {
-            c.enabled = false;
-        }
+        foreach (var c in cols) c.enabled = false;
 
         var rbs = go.GetComponentsInChildren<Rigidbody>(true);
         foreach (var rb in rbs)

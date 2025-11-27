@@ -7,16 +7,13 @@ using Singleton;
 
 public class GameManager : Singleton<GameManager>
 {
-    [Header("Spawn Settings")]
     [SerializeField] private Transform spawnCenter;
     [SerializeField] private int maxConcurrentEnemies = 50;
     [SerializeField] private bool startSpawningOnAwake = false;
 
-    [Header("Game Stats")]
     [SerializeField] private float startingNexusHealth = 100f;
     [SerializeField] public int startingMoney = 500;
 
-    [Header("Visuals & UI")]
     [SerializeField] private DamageText damageTextPrefab;
     [SerializeField] private float textSpawnOffsetY = 1.5f;
     [SerializeField] private TextMeshPro nexusHealthText;
@@ -24,20 +21,17 @@ public class GameManager : Singleton<GameManager>
     private float nexusHealth;
     public int currentMoney;
 
-    // Track what is currently shown on UI for animation purposes
     private int displayedMoney;
     private Coroutine goldAnimationCoroutine;
 
     private readonly List<Enemy> enemies = new List<Enemy>();
     public IReadOnlyList<Enemy> Enemies => enemies;
 
-    // --- OBSERVER PATTERN ---
     public event Action<Enemy> OnEnemySpawned;
     public event Action<Enemy> OnEnemyDied;
     public event Action<float> OnNexusDamaged;
     public event Action<float> OnNexusHealthChanged;
 
-    // --- STATE PATTERN ---
     private IGameState currentState;
     public IGameState CurrentState => currentState;
 
@@ -65,7 +59,6 @@ public class GameManager : Singleton<GameManager>
     {
         ChangeState(new BuildState());
 
-        // Initial UI Updates
         UIManager.Instance?.UpdateCurrencyUI(currentMoney);
         UpdateNexusHealthUI();
     }
@@ -86,6 +79,8 @@ public class GameManager : Singleton<GameManager>
         if (currentState != null)
             currentState.Exit(this);
 
+        CommandManager.Instance?.ClearStacks();
+
         currentState = newState;
         currentState.Enter(this);
     }
@@ -96,7 +91,6 @@ public class GameManager : Singleton<GameManager>
         return currentState.GetManaCostMultiplier();
     }
 
-    // --- Centralized Win/Loss Logic ---
 
     public void TriggerVictory()
     {
@@ -131,7 +125,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    // ----------------------------------
 
     public void PauseGame()
     {
@@ -204,7 +197,6 @@ public class GameManager : Singleton<GameManager>
 
     public float GetNexusHealth() => nexusHealth;
 
-    // CHANGED: Added 'giveReward' boolean parameter (default true)
     public void NotifyEnemyDied(Enemy e, bool giveReward = true)
     {
         if (giveReward)
@@ -212,10 +204,8 @@ public class GameManager : Singleton<GameManager>
             int goldReward = 100;
             AddMoney(goldReward);
 
-            // Call UIManager to show the gold popup on Canvas
             if (e != null)
             {
-                // This calls the method we created in UIManager.cs
                 UIManager.Instance?.ShowGoldPopup(e.transform.position, goldReward);
             }
         }

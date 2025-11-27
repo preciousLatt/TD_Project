@@ -4,28 +4,24 @@ using UnityEngine.UI;
 
 public class UIManager : Singleton.Singleton<UIManager>
 {
-    [Header(" Panels ")]
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject pausePanel;
     [SerializeField] private GameObject victoryPanel;
     [SerializeField] private GameObject gameOverPanel;
 
-    [Header(" Upgrade UI ")]
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject upgradeButtonPrefab;
+    [SerializeField] private Button sellButton; 
 
-    [Header(" HUD ")]
     [SerializeField] private TextMeshProUGUI currencyText;
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
     [SerializeField] private HeroAbilitySlot[] abilitySlots;
 
-    [Header(" Wave UI ")]
     [SerializeField] private TextMeshProUGUI waveText;
     [SerializeField] private Button startWaveButton;
 
-    [Header(" Gold FX ")]
-    [SerializeField] private GameObject goldPopupPrefab; // Assign the new UI prefab here
+    [SerializeField] private GameObject goldPopupPrefab;
 
     private Tower currentTower;
     private RebindRowUI[] rebindRows;
@@ -46,7 +42,6 @@ public class UIManager : Singleton.Singleton<UIManager>
         }
     }
 
-    // --- Win / Loss Logic ---
     public void ShowVictoryPanel()
     {
         if (victoryPanel != null)
@@ -58,19 +53,14 @@ public class UIManager : Singleton.Singleton<UIManager>
         if (gameOverPanel != null)
             gameOverPanel.SetActive(true);
     }
-    // ------------------------
 
-    // --- Gold FX Logic ---
     public void ShowGoldPopup(Vector3 worldPos, int amount)
     {
         if (goldPopupPrefab == null || currencyText == null) return;
 
-        // FIXED: Use a fixed offset to the right of the coin text (no random circle)
-        // Adjust '60f' depending on your canvas scaling to place it nicely next to the text
         Vector3 fixedOffset = Vector3.down * 60f;
         Vector3 spawnPos = currencyText.transform.position + fixedOffset;
 
-        // Instantiate on the Canvas
         GameObject go = Instantiate(goldPopupPrefab, currencyText.transform.parent);
 
         go.transform.SetAsLastSibling();
@@ -81,10 +71,8 @@ public class UIManager : Singleton.Singleton<UIManager>
         go.transform.localPosition = localPos;
         go.transform.localRotation = Quaternion.identity;
 
-        // Make it smaller (0.7 scale)
-        go.transform.localScale = Vector3.one * 1.5f;
+        go.transform.localScale = Vector3.one * 0.7f;
 
-        // Initialize the animation
         var popup = go.GetComponent<CurrencyPopupUI>();
         if (popup != null)
         {
@@ -98,7 +86,6 @@ public class UIManager : Singleton.Singleton<UIManager>
             currencyText.text = $"${newAmount}";
     }
 
-    // --- Wave Logic ---
     public void UpdateWaveUI(int current, int total)
     {
         if (waveText != null)
@@ -172,6 +159,23 @@ public class UIManager : Singleton.Singleton<UIManager>
             txt.text = $"{tower.upgradePaths[i].pathName} ({step.cost})";
             int index = i;
             btn.onClick.AddListener(() => tower.ApplyUpgrade(index));
+        }
+
+        if (sellButton != null)
+        {
+            sellButton.onClick.RemoveAllListeners();
+
+            int refundAmount = Mathf.FloorToInt(tower.cost * 0.5f);
+
+            var sellText = sellButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (sellText != null)
+            {
+                sellText.text = $"Sell (+{refundAmount})";
+            }
+
+            sellButton.onClick.AddListener(() => {
+                BuildManager.Instance.SellTower(tower.gameObject);
+            });
         }
     }
 

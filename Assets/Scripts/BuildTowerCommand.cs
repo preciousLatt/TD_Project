@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class BuildTowerCommand : ICommand
+public class BuildTowerCommand : IGameCommand
 {
     private GameObject towerPrefab;
     private Vector3 position;
@@ -8,17 +8,26 @@ public class BuildTowerCommand : ICommand
     private GameObject placedTower;
     private int towerCost;
 
-    public BuildTowerCommand(GameObject prefab, Vector3 pos, Quaternion rot, int cost)
+    public BuildTowerCommand(GameObject prefab, Vector3 pos, Quaternion rot)
     {
         towerPrefab = prefab;
         position = pos;
         rotation = rot;
-        towerCost = cost;
+
+        Tower t = towerPrefab.GetComponent<Tower>();
+        if (t != null)
+        {
+            towerCost = t.cost;
+        }
+        else
+        {
+            towerCost = 100; 
+            Debug.LogWarning($"Tower prefab {prefab.name} is missing a Tower script!");
+        }
     }
 
     public bool Execute()
     {
-        // Check resources
         if (!GameManager.Instance.CanAfford(towerCost))
         {
             Debug.Log("Cannot afford tower!");

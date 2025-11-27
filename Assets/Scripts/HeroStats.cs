@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class HeroStats : MonoBehaviour
 {
-    [Header("Stats")]
     public float maxHealth = 200f;
     public float maxMana = 100f;
     public float moveSpeed = 5f;
@@ -10,7 +9,6 @@ public class HeroStats : MonoBehaviour
     public float attackRange = 4f;
     public float attackRate = 1f;
 
-    [Header("Regen")]
     public float healthRegen = 2f;
     public float manaRegen = 3f;
 

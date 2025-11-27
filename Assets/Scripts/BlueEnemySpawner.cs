@@ -6,6 +6,6 @@ public class BlueEnemySpawner : EnemyFactorySpawner
     {
         baseHealth = 120f;
         baseSpeed = 1.5f;
-        base.SpawnEnemy();  // use the base spawn behaviour
+        base.SpawnEnemy();  
     }
 }
