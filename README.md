@@ -18,7 +18,7 @@ The idea is simple, we instantiate objects via traditional and tedious way that 
 
 In this profiling, we see 0.7 MB of GC Alloc when using the traditional for-loop and built-in Instantiate function. We first check if object pooling is enabled, which by default is not. 
 
-![alt text](code1.png)
+![alt text](Code1.png)
 
 However, comparing with using the object pooling design pattern, we see a much better performance compared to that of the regular Instantiate method. 
 
