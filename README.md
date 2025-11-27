@@ -44,3 +44,7 @@ A GC Alloc of ~0 KB. This is evident when object pooling setting is checked to e
 
 ![alt text](objectpoolUML.png)
 
+### Contributions 
+
+Saw was responsible for the UML designs, Readme Update and performance profiling of object pooling vs non-object pooling perforance. Implementation of 1 object pooling pattern. Arshiya implemented 2 object pooling patterns  (enemies & projectiles), Observer & State pattern and QOL changes. ( Saw 30 - Arshiya 70 split )
+
