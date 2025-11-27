@@ -36,7 +36,7 @@ A GC Alloc of ~0 KB. This is evident when object pooling setting is checked to e
 
 ![alt text](observerUML.png)
 
-State UML
+### State UML
 
 ![alt text](stateUML.png)
 
