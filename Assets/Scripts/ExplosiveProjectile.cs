@@ -2,37 +2,61 @@ using UnityEngine;
 
 public class ExplosiveProjectile : Projectile
 {
-    [Header("Explosive Stats")]
     [SerializeField] private float explosionRadius = 4f;
+    [SerializeField] private float explosionDamage = 40f;
+    [SerializeField] private LayerMask enemyMask;
+    [SerializeField] private LayerMask groundMask; 
+    [SerializeField] private GameObject explosionEffect;
 
-    // We override the base hit logic
+    private bool exploded = false;
+
     protected override void HitTarget()
     {
-        // 1. Visuals
-        if (impactVFX != null)
-            Instantiate(impactVFX, transform.position, Quaternion.identity);
+        Explode();
+    }
 
-        // 2. Find all enemies in range
-        Collider[] hits = Physics.OverlapSphere(transform.position, explosionRadius, LayerMask.GetMask("Enemy"));
+    private void OnTriggerEnter(Collider other)
+    {
+        if (exploded) return;
 
-        foreach (Collider hit in hits)
+        if (((1 << other.gameObject.layer) & groundMask) != 0)
+        {
+            Explode();
+        }
+        else if (other.CompareTag("Enemy"))
+        {
+            Explode();
+        }
+    }
+
+    private void Explode()
+    {
+        if (exploded) return;
+        exploded = true;
+
+        Vector3 pos = transform.position;
+
+        if (explosionEffect != null)
+        {
+            GameObject fx = Instantiate(explosionEffect, pos, Quaternion.identity);
+            Destroy(fx, 0.3f); 
+        }
+
+        Collider[] hits = Physics.OverlapSphere(pos, explosionRadius, enemyMask);
+
+        foreach (var hit in hits)
         {
             Enemy e = hit.GetComponent<Enemy>();
             if (e != null && !e.IsDead)
             {
-                // Deal damage to everyone found
-                GameManager.Instance?.DamageEnemy(e, damage);
+                if (GameManager.Instance != null)
+                    GameManager.Instance.DamageEnemy(e, explosionDamage);
+                else
+                    e.TakeDamage(explosionDamage);
             }
         }
 
-        // 3. Destroy the bullet
         Destroy(gameObject);
     }
 
-    // Draw the radius in the editor so you can see it
-    private void OnDrawGizmosSelected()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, explosionRadius);
-    }
 }

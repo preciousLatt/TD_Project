@@ -1,13 +1,14 @@
 using UnityEngine;
 using System.Collections;
-using UnityEngine.Pool; // Required for Object Pooling
+using UnityEngine.Pool;
 
 public class Enemy : MonoBehaviour
 {
-    [Header("Defaults (used only if not initialized by a spawner)")]
+    [Header("Stats")]
     [SerializeField] private float defaultSpeed = 2f;
     [SerializeField] private float defaultHealth = 100f;
     [SerializeField] private float waypointArrivalThreshold = 1.0f;
+    [SerializeField] private float contactDamage = 15f; 
 
     private float baseSpeed;
     private float currentSpeed;
@@ -20,15 +21,12 @@ public class Enemy : MonoBehaviour
     private bool notifiedDeath;
     public bool IsDead => health <= 0;
 
-    // --- Object Pooling Reference ---
     private IObjectPool<Enemy> pool;
     public void SetPool(IObjectPool<Enemy> pool) => this.pool = pool;
 
-    // --- Slow System Properties ---
     public bool IsSlowed => slowCoroutine != null;
     private Coroutine slowCoroutine;
 
-    // Call this from your spawner/factory
     public void Initialize(float moveSpeed, float hp, Transform nexus)
     {
         baseSpeed = moveSpeed;
@@ -36,10 +34,7 @@ public class Enemy : MonoBehaviour
         health = hp;
         finalNexusTarget = nexus;
         currentPathLevel = -1;
-
-        // Ensure state is clean on re-use
         notifiedDeath = false;
-
         FindNextTarget();
     }
 
@@ -66,7 +61,6 @@ public class Enemy : MonoBehaviour
 
     private void OnDisable()
     {
-        // When returned to pool, reset internal state
         if (slowCoroutine != null)
         {
             StopCoroutine(slowCoroutine);
@@ -77,9 +71,7 @@ public class Enemy : MonoBehaviour
 
     public void ApplySlow(float slowPct, float duration)
     {
-        // FIX: Do not attempt to start a coroutine if the enemy is already dead/inactive
         if (!gameObject.activeInHierarchy || IsDead) return;
-
         if (slowCoroutine != null) StopCoroutine(slowCoroutine);
         slowCoroutine = StartCoroutine(SlowRoutine(slowPct, duration));
     }
@@ -151,20 +143,12 @@ public class Enemy : MonoBehaviour
             GameManager.Instance?.NotifyEnemyDied(this);
         }
 
-        // Return to pool if it exists, otherwise standard Destroy
-        if (pool != null)
-        {
-            pool.Release(this);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
+        if (pool != null) pool.Release(this);
+        else Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        // Failsafe if destroyed by scene unloading or logic outside Die()
         if (!notifiedDeath)
         {
             notifiedDeath = true;
@@ -178,6 +162,15 @@ public class Enemy : MonoBehaviour
         {
             GameManager.Instance?.DamageNexus(10f);
             Die();
+        }
+        else if (other.CompareTag("Player"))
+        {
+            HeroStats playerStats = other.GetComponent<HeroStats>();
+            Debug.Log("Player should have been hit");
+            if (playerStats != null)
+            {
+                GameManager.Instance?.DamageHero(playerStats, contactDamage);
+            }
         }
     }
 }

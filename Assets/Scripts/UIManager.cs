@@ -4,37 +4,30 @@ using UnityEngine.UI;
 
 public class UIManager : Singleton.Singleton<UIManager>
 {
-    [Header(" Panels ")]
     [SerializeField] private GameObject upgradePanel;
     [SerializeField] private GameObject pausePanel;
 
-    [Header(" Upgrade UI ")]
     [SerializeField] private Transform buttonContainer;
     [SerializeField] private GameObject upgradeButtonPrefab;
 
-    [Header(" HUD ")]
     [SerializeField] private TextMeshProUGUI currencyText;
     [SerializeField] private Slider healthBar;
     [SerializeField] private Slider manaBar;
     [SerializeField] private HeroAbilitySlot[] abilitySlots;
 
-    [Header(" Wave UI ")]
-    [SerializeField] private TextMeshProUGUI waveText;      // Assign in Inspector
-    [SerializeField] private Button startWaveButton;        // Assign in Inspector
+    [SerializeField] private TextMeshProUGUI waveText;      
+    [SerializeField] private Button startWaveButton;        
 
     private Tower currentTower;
     private RebindRowUI[] rebindRows;
 
-    // --- RESTORED PUBLIC PROPERTIES ---
     public Tower CurrentTower => currentTower;
     public HeroAbilitySlot[] AbilitySlots => abilitySlots;
-    // ----------------------------------
 
     private void Awake()
     {
         rebindRows = FindObjectsOfType<RebindRowUI>(true);
 
-        // Hook up the start button automatically
         if (startWaveButton != null)
         {
             startWaveButton.onClick.AddListener(() => {
@@ -44,7 +37,6 @@ public class UIManager : Singleton.Singleton<UIManager>
         }
     }
 
-    // --- Wave Logic ---
     public void UpdateWaveUI(int current, int total)
     {
         if (waveText != null)
@@ -61,7 +53,7 @@ public class UIManager : Singleton.Singleton<UIManager>
                 txt.text = interactable ? "Start Wave" : "Spawning...";
         }
     }
-    // ------------------
+
 
     public void SetupHeroUI(HeroCombat hero)
     {

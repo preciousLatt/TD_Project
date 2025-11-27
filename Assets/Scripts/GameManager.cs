@@ -20,13 +20,11 @@ public class GameManager : Singleton<GameManager>
     private readonly List<Enemy> enemies = new List<Enemy>();
     public IReadOnlyList<Enemy> Enemies => enemies;
 
-    // --- OBSERVER PATTERN ---
     public event Action<Enemy> OnEnemySpawned;
     public event Action<Enemy> OnEnemyDied;
     public event Action<float> OnNexusDamaged;
     public event Action<float> OnNexusHealthChanged;
 
-    // --- STATE PATTERN ---
     private IGameState currentState;
     public IGameState CurrentState => currentState;
 
@@ -51,9 +49,7 @@ public class GameManager : Singleton<GameManager>
 
     private void Start()
     {
-        // START IN BUILD STATE (Free Mana)
         ChangeState(new BuildState());
-
         UIManager.Instance?.UpdateCurrencyUI(currentMoney);
     }
 
@@ -77,13 +73,12 @@ public class GameManager : Singleton<GameManager>
         currentState.Enter(this);
     }
 
-    // --- NEW HELPER FOR MANA COST ---
     public float GetManaMultiplier()
     {
         if (currentState == null) return 1f;
         return currentState.GetManaCostMultiplier();
     }
-    // --------------------------------
+
 
     public void TriggerVictory()
     {
@@ -92,6 +87,30 @@ public class GameManager : Singleton<GameManager>
             ChangeState(new VictoryState());
         }
     }
+
+    public void TriggerGameOver()
+    {
+        if (currentState is not GameOverState)
+        {
+            ChangeState(new GameOverState());
+        }
+    }
+
+    public void DamageHero(HeroStats hero, float damage)
+    {
+        if (hero == null) return;
+
+        hero.currentHealth -= damage;
+        Debug.Log($"Player hit! Health: {hero.currentHealth}");
+
+        UIManager.Instance?.UpdateHeroBars(hero);
+
+        if (hero.currentHealth <= 0)
+        {
+            TriggerGameOver();
+        }
+    }
+
 
     public void PauseGame()
     {
@@ -149,6 +168,7 @@ public class GameManager : Singleton<GameManager>
         if (nexusHealth <= 0f)
         {
             Debug.Log("Nexus destroyed");
+            TriggerGameOver();
         }
     }
 

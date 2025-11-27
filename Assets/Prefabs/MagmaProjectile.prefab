@@ -110,3 +110,11 @@ MonoBehaviour:
   damage: 25
   impactVFX: {fileID: 0}
   explosionRadius: 4
+  explosionDamage: 40
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 128
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
+  explosionEffect: {fileID: 4127630460854083330, guid: 7953db15a3e6707488e5052524370e77, type: 3}
