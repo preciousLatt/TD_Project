@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class BoulderTossProjectile : MonoBehaviour
 {
-    [SerializeField] private GameObject impactVFX; // Assign a particle effect here
+    [SerializeField] private GameObject impactVFX;
 
     private Vector3 _startPos;
     private Vector3 _targetPos;
@@ -38,13 +38,11 @@ public class BoulderTossProjectile : MonoBehaviour
             return;
         }
 
-        // --- Parabolic Movement Math ---
         Vector3 linearPos = Vector3.Lerp(_startPos, _targetPos, linearT);
         float heightOffset = 4 * _arcHeight * linearT * (1 - linearT);
 
         transform.position = linearPos + Vector3.up * heightOffset;
 
-        // Rotate the rock to tumble
         transform.Rotate(Vector3.right * 360f * Time.deltaTime);
     }
 
@@ -52,17 +50,13 @@ public class BoulderTossProjectile : MonoBehaviour
     {
         _isFlying = false;
 
-        // Visual Effects Cleanup Fix
         if (impactVFX != null)
         {
             GameObject vfxInstance = Instantiate(impactVFX, transform.position, Quaternion.identity);
 
-            // FIX: Destroy the VFX object after 3 seconds so it doesn't leak memory/clutter scene
-            // If your particle system is longer than 3 seconds, increase this number.
             Destroy(vfxInstance, 3f);
         }
 
-        // Deal Area Damage
         Collider[] hits = Physics.OverlapSphere(transform.position, _radius, LayerMask.GetMask("Enemy"));
 
         foreach (var hit in hits)
@@ -80,7 +74,6 @@ public class BoulderTossProjectile : MonoBehaviour
         Destroy(gameObject);
     }
 
-    // Draw the explosion radius in the editor
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

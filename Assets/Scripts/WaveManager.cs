@@ -6,12 +6,10 @@ using UnityEngine.Pool;
 
 public class WaveManager : Singleton<WaveManager>
 {
-    [Header("Configuration")]
     [SerializeField] private TextAsset jsonFile;
     [SerializeField] private Transform[] spawnPoints;
     [SerializeField] private Transform nexusTarget;
 
-    [Header("Enemy Registry")]
     [SerializeField] private List<EnemyIDPair> enemyRegistryList;
 
     private Dictionary<string, IObjectPool<Enemy>> enemyPools;

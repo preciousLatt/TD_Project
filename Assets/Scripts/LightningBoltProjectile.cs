@@ -3,32 +3,22 @@ using UnityEngine;
 
 public class LightningBoltProjectile : MonoBehaviour
 {
-    [Header("Projectile Movement")]
     [SerializeField] private float speed = 30f;
-
-    // NOTE: This projectile is expected to have a Collider component with 'isTrigger' set to true
-    // and a Rigidbody component attached for collision detection.
-
-    [Header("Ability Stats")]
     [SerializeField] private float chainRange = 6f;
     [SerializeField] private int maxChains = 4;
-
-    [Header("Visuals")]
     [SerializeField] private LineRenderer linePrefab;
     [SerializeField] private float lineDuration = 0.15f;
 
     private Vector3 _direction;
     private Vector3 _endPosition;
-    private Vector3 _startPosition; // FIX: Added to track start point independently
+    private Vector3 _startPosition; 
     private float _hitDamage = 0f;
     private bool _isFlying = true;
 
     private HashSet<Enemy> _hitSet = new HashSet<Enemy>();
     private int _chainsDone = 0;
 
-    /// <summary>
-    /// Initializes the projectile for straight-line flight.
-    /// </summary>
+
     public void InitDirectionOnly(Vector3 direction, Vector3 endPosition, float damage)
     {
         _direction = direction;

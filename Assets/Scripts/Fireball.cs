@@ -6,7 +6,6 @@ public class FireballAbility : HeroAbility
     public FireballProjectile projectilePrefab;
     public float damage = 40f;
 
-    // CHANGED: Update to protected override bool OnActivate
     protected override bool Activate(HeroCombat hero, HeroStats stats)
     {
         Camera cam = Camera.main;
@@ -18,9 +17,9 @@ public class FireballAbility : HeroAbility
         {
             Vector3 spawnPos = hero.transform.position + Vector3.up * 1.2f;
             Projectile.Spawn(projectilePrefab, spawnPos, hit.point, damage);
-            return true; // Successfully cast
+            return true; 
         }
 
-        return false; // Cast failed
+        return false; 
     }
 }

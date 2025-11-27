@@ -7,10 +7,8 @@ public class HeroCombat : MonoBehaviour
     private HeroStats stats;
     private float attackCooldown;
 
-    // NEW: Track the game state to detect wave starts
     private IGameState lastKnownState;
 
-    // Dictionary to track when each ability will be ready again
     private Dictionary<HeroAbility, float> abilityCooldowns = new Dictionary<HeroAbility, float>();
 
     [SerializeField] private Transform attackPoint;
@@ -29,7 +27,6 @@ public class HeroCombat : MonoBehaviour
             UIManager.Instance.UpdateHeroBars(stats);
         }
 
-        // Initialize state tracker
         if (GameManager.Instance != null)
         {
             lastKnownState = GameManager.Instance.CurrentState;
@@ -41,13 +38,11 @@ public class HeroCombat : MonoBehaviour
         if (attackCooldown > 0)
             attackCooldown -= Time.deltaTime;
 
-        // --- DETECT WAVE START (State Change) ---
         if (GameManager.Instance != null)
         {
             var currentState = GameManager.Instance.CurrentState;
             if (currentState != lastKnownState)
             {
-                // If we switched TO CombatState, it means a wave just started
                 if (currentState is CombatState)
                 {
                     ResetCooldowns();
@@ -59,13 +54,9 @@ public class HeroCombat : MonoBehaviour
 
     public void ResetCooldowns()
     {
-        // 1. Clear logical cooldowns so abilities can be used immediately
         abilityCooldowns.Clear();
 
-        // 2. Reset UI Visuals cleanly
-        // Do NOT call StartCooldown(0.05f). 
-        // Instead, tell UIManager to re-bind the slots. 
-        // This calls Bind() on the slots, which triggers ResetCooldownUI(), stopping the coroutine instantly.
+
         if (UIManager.Instance != null)
         {
             UIManager.Instance.SetupHeroUI(this);
@@ -95,25 +86,20 @@ public class HeroCombat : MonoBehaviour
         var ability = abilities[index];
         if (ability == null) return;
 
-        // --- 1. COOLDOWN CHECK ---
         if (abilityCooldowns.ContainsKey(ability))
         {
             if (Time.time < abilityCooldowns[ability])
             {
-                // Ability is still on cooldown
                 return;
             }
         }
 
-        // --- 2. GET MANA MULTIPLIER ---
         float costMultiplier = 1f;
         if (GameManager.Instance != null)
         {
             costMultiplier = GameManager.Instance.GetManaMultiplier();
         }
 
-        // --- 3. ATTEMPT USE ---
-        // TryUse will call StartAbilityCooldownUI if successful
         ability.TryUse(this, stats, costMultiplier);
     }
 
@@ -123,13 +109,10 @@ public class HeroCombat : MonoBehaviour
         return abilities[index];
     }
 
-    // Called by HeroAbility when usage is successful
     public void StartAbilityCooldownUI(HeroAbility ability, float duration)
     {
-        // 1. LOGIC: Set the time when this ability is allowed to be used next
         abilityCooldowns[ability] = Time.time + duration;
 
-        // 2. VISUALS: Update the UI
         if (UIManager.Instance == null) return;
 
         var slots = UIManager.Instance.AbilitySlots;

@@ -3,15 +3,12 @@ using UnityEngine;
 
 public class EnemyFactorySpawner : MonoBehaviour
 {
-    [Header("Enemy Prefab")]
     [SerializeField] protected GameObject enemyPrefab;
 
-    [Header("Base Stats")]
     [SerializeField] protected float baseSpeed = 2f;
     [SerializeField] protected float baseHealth = 100f;
-    [SerializeField] protected float damageToNexus = 10f; // (optional, if you want per-type damage)
+    [SerializeField] protected float damageToNexus = 10f; 
 
-    [Header("Spawner Settings")]
     [SerializeField] protected Transform nexusTarget;
     [SerializeField] protected Transform[] spawnPoints;
     [SerializeField] protected float spawnInterval = 2f;
@@ -54,7 +51,6 @@ public class EnemyFactorySpawner : MonoBehaviour
         Enemy e = go.GetComponent<Enemy>();
         if (e != null)
         {
-            // Initialize stats/target (registration is handled by the Enemy itself)
             e.Initialize(baseSpeed, baseHealth, nexusTarget);
         }
         else

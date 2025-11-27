@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float defaultSpeed = 2f;
     [SerializeField] private float defaultHealth = 100f;
     [SerializeField] private float waypointArrivalThreshold = 1.0f;
-    [SerializeField] private float contactDamage = 15f; 
+    [SerializeField] private float contactDamage = 15f;
 
     private float baseSpeed;
     private float currentSpeed;
@@ -132,15 +132,17 @@ public class Enemy : MonoBehaviour
         GameManager.Instance.ShowDamageText(transform.position, amount, Color.red);
         if (IsDead) return;
         health -= amount;
-        if (health <= 0f) Die();
+        if (health <= 0f) Die(true); // Death by damage = Reward
     }
 
-    private void Die()
+    // CHANGED: Added parameter 'giveReward'
+    private void Die(bool giveReward = true)
     {
         if (!notifiedDeath)
         {
             notifiedDeath = true;
-            GameManager.Instance?.NotifyEnemyDied(this);
+            // Pass the reward flag to GameManager
+            GameManager.Instance?.NotifyEnemyDied(this, giveReward);
         }
 
         if (pool != null) pool.Release(this);
@@ -152,7 +154,8 @@ public class Enemy : MonoBehaviour
         if (!notifiedDeath)
         {
             notifiedDeath = true;
-            GameManager.Instance?.NotifyEnemyDied(this);
+            // Default destroy (e.g. scene unload) gives no reward to be safe, or true if preferred
+            GameManager.Instance?.NotifyEnemyDied(this, false);
         }
     }
 
@@ -161,12 +164,12 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Nexus"))
         {
             GameManager.Instance?.DamageNexus(10f);
-            Die();
+            // CHANGED: Call Die with false so no gold is awarded
+            Die(false);
         }
         else if (other.CompareTag("Player"))
         {
             HeroStats playerStats = other.GetComponent<HeroStats>();
-            Debug.Log("Player should have been hit");
             if (playerStats != null)
             {
                 GameManager.Instance?.DamageHero(playerStats, contactDamage);

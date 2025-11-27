@@ -18,14 +18,11 @@ public class Waypoint : MonoBehaviour
         }
     }
 
-    // Visual aid to see waypoints and their connections in the Scene view
     private void OnDrawGizmos()
     {
-        // Color code based on level
         Gizmos.color = Color.HSVToRGB((level * 0.1f) % 1f, 1f, 1f);
         Gizmos.DrawSphere(transform.position, 0.5f);
 
-        // Draw label (only works in Unity Editor handles)
 #if UNITY_EDITOR
         UnityEditor.Handles.Label(transform.position + Vector3.up, $"WP Lvl {level}");
 #endif

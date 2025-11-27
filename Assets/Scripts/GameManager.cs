@@ -1,30 +1,43 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 using Singleton;
 
 public class GameManager : Singleton<GameManager>
 {
+    [Header("Spawn Settings")]
     [SerializeField] private Transform spawnCenter;
     [SerializeField] private int maxConcurrentEnemies = 50;
     [SerializeField] private bool startSpawningOnAwake = false;
 
+    [Header("Game Stats")]
     [SerializeField] private float startingNexusHealth = 100f;
     [SerializeField] public int startingMoney = 500;
 
+    [Header("Visuals & UI")]
     [SerializeField] private DamageText damageTextPrefab;
     [SerializeField] private float textSpawnOffsetY = 1.5f;
+    [SerializeField] private TextMeshPro nexusHealthText;
 
     private float nexusHealth;
     public int currentMoney;
+
+    // Track what is currently shown on UI for animation purposes
+    private int displayedMoney;
+    private Coroutine goldAnimationCoroutine;
+
     private readonly List<Enemy> enemies = new List<Enemy>();
     public IReadOnlyList<Enemy> Enemies => enemies;
 
+    // --- OBSERVER PATTERN ---
     public event Action<Enemy> OnEnemySpawned;
     public event Action<Enemy> OnEnemyDied;
     public event Action<float> OnNexusDamaged;
     public event Action<float> OnNexusHealthChanged;
 
+    // --- STATE PATTERN ---
     private IGameState currentState;
     public IGameState CurrentState => currentState;
 
@@ -35,6 +48,7 @@ public class GameManager : Singleton<GameManager>
         base.Awake();
         nexusHealth = startingNexusHealth;
         currentMoney = startingMoney;
+        displayedMoney = startingMoney;
 
         if (spawnCenter == null)
         {
@@ -50,7 +64,10 @@ public class GameManager : Singleton<GameManager>
     private void Start()
     {
         ChangeState(new BuildState());
+
+        // Initial UI Updates
         UIManager.Instance?.UpdateCurrencyUI(currentMoney);
+        UpdateNexusHealthUI();
     }
 
     private void Update()
@@ -79,12 +96,14 @@ public class GameManager : Singleton<GameManager>
         return currentState.GetManaCostMultiplier();
     }
 
+    // --- Centralized Win/Loss Logic ---
 
     public void TriggerVictory()
     {
         if (currentState is not GameOverState)
         {
             ChangeState(new VictoryState());
+            UIManager.Instance?.ShowVictoryPanel();
         }
     }
 
@@ -93,6 +112,7 @@ public class GameManager : Singleton<GameManager>
         if (currentState is not GameOverState)
         {
             ChangeState(new GameOverState());
+            UIManager.Instance?.ShowGameOverPanel();
         }
     }
 
@@ -111,6 +131,7 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    // ----------------------------------
 
     public void PauseGame()
     {
@@ -162,6 +183,7 @@ public class GameManager : Singleton<GameManager>
         nexusHealth -= amount;
         if (nexusHealth < 0f) nexusHealth = 0f;
 
+        UpdateNexusHealthUI();
         OnNexusDamaged?.Invoke(amount);
         OnNexusHealthChanged?.Invoke(nexusHealth);
 
@@ -172,11 +194,32 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
+    private void UpdateNexusHealthUI()
+    {
+        if (nexusHealthText != null)
+        {
+            nexusHealthText.text = $"{Mathf.CeilToInt(nexusHealth)}/{startingNexusHealth}";
+        }
+    }
+
     public float GetNexusHealth() => nexusHealth;
 
-    public void NotifyEnemyDied(Enemy e)
+    // CHANGED: Added 'giveReward' boolean parameter (default true)
+    public void NotifyEnemyDied(Enemy e, bool giveReward = true)
     {
-        AddMoney(100);
+        if (giveReward)
+        {
+            int goldReward = 100;
+            AddMoney(goldReward);
+
+            // Call UIManager to show the gold popup on Canvas
+            if (e != null)
+            {
+                // This calls the method we created in UIManager.cs
+                UIManager.Instance?.ShowGoldPopup(e.transform.position, goldReward);
+            }
+        }
+
         if (e == null) return;
         UnregisterEnemy(e);
         OnEnemyDied?.Invoke(e);
@@ -187,15 +230,42 @@ public class GameManager : Singleton<GameManager>
     public void AddMoney(int amount)
     {
         currentMoney += amount;
-        UIManager.Instance?.UpdateCurrencyUI(currentMoney);
+        RefreshMoneyUI();
     }
 
     public bool SpendMoney(int amount)
     {
         if (!CanAfford(amount)) return false;
         currentMoney -= amount;
-        UIManager.Instance?.UpdateCurrencyUI(currentMoney);
+        RefreshMoneyUI();
         return true;
+    }
+
+    private void RefreshMoneyUI()
+    {
+        if (goldAnimationCoroutine != null) StopCoroutine(goldAnimationCoroutine);
+        goldAnimationCoroutine = StartCoroutine(AnimateMoney());
+    }
+
+    private IEnumerator AnimateMoney()
+    {
+        float duration = 0.5f;
+        float elapsed = 0f;
+        int startValue = displayedMoney;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.unscaledDeltaTime;
+            float t = elapsed / duration;
+            t = Mathf.Sin(t * Mathf.PI * 0.5f);
+
+            displayedMoney = Mathf.RoundToInt(Mathf.Lerp(startValue, currentMoney, t));
+            UIManager.Instance?.UpdateCurrencyUI(displayedMoney);
+            yield return null;
+        }
+
+        displayedMoney = currentMoney;
+        UIManager.Instance?.UpdateCurrencyUI(displayedMoney);
     }
 
     public void ShowDamageText(Vector3 worldPos, float amount, Color color)
