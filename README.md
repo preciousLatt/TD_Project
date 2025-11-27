@@ -6,9 +6,15 @@
 
 A Tower Defence Game with a controllable character (WASD) who can cast spells, place towers, sell towers, and remap key bindings for movement. 
 
-The scenario's purpose will is to showcase all the design patterns so far done in class. The scene so far does not follow the player's movement but is more than capable of showcasing all the design patterns we have learned in class. Enemies will make their way to the nexus and the player must right-click to attack or cast spells to destroy the enemies and place towers to defend the objective. Towers can be upgraded and killing enemies gives cash. 
+The scenario's purpose will is to showcase all the design patterns so far done in class. The scene has improved from last progress report. There is an object pooling method to implement environment as well as performance improvements through object pooling enemies and projectiles. Furthermore, observer and state patterns have been added as required to create a different game states and handling events. QOL changes have been implemented to showcase animations and better fluidity. 
 
 ## Post-Midterm-Progress (Final)
+
+### Game Design Pattern improvements from the previous assignment
+
+There was significant changes to the command pattern. From previous assignment, it was refunding (undoing) an absurd amount of currency while also the money logic (not the command pattern) was being handled by game manager. We made these changes to pull cost from the tower class (before it was all game manager). 
+
+Significant improvements to the scene and environment spawning. Before it was instantiated statically and now we have object pooling.
 
 ### Performance Profiling of Object pooling vs Without Object Pooling
 
