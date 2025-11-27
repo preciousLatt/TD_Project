@@ -6,7 +6,6 @@ public interface IGameState
     void Update(GameManager gm);
     void Exit(GameManager gm);
 
-    // Determines if abilities cost mana (0 = free, 1 = normal)
     float GetManaCostMultiplier();
 }
 

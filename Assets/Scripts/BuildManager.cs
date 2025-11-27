@@ -7,6 +7,7 @@ public class BuildManager : Singleton<BuildManager>
     [SerializeField] private Camera playerCamera;
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private LayerMask towerMask;
+    [SerializeField] private LayerMask pathMask;
     [SerializeField] private float placementCheckPadding = 1f;
 
     private GameObject currentValidPreviewPrefab;
@@ -141,10 +142,19 @@ public class BuildManager : Singleton<BuildManager>
     private bool CanPlaceAt(Vector3 worldPos)
     {
         float checkRadius = previewCheckRadius + placementCheckPadding;
-        Collider[] hits = Physics.OverlapSphere(worldPos, checkRadius, towerMask);
-        return hits.Length == 0;
-    }
 
+        if (Physics.CheckSphere(worldPos, checkRadius, towerMask))
+        {
+            return false;
+        }
+
+        if (Physics.CheckSphere(worldPos, checkRadius, pathMask))
+        {
+            return false;
+        }
+
+        return true;
+    }
     private void ConfirmPlacement(Vector3 worldPos, Quaternion rot)
     {
         if (currentActualPrefab == null) return;
